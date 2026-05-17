@@ -1,0 +1,17 @@
+flowchart TB
+    Config[config] --> Auth[auth]
+    Config --> Common[common]
+    Auth --> User[user]
+    Notes[notes] --> User
+    Learning[learning] --> User
+    Learning --> Tasks[tasks]
+    Learning --> Ai[ai]
+    Tasks --> User
+    Dashboard[dashboard] --> Learning
+    Dashboard --> Tasks
+    Dashboard --> Notes
+    Ai --> AIService[FastAPI AI-service]
+
+    Common -. ошибки и DTO helpers .- Auth
+    Common -. ошибки и DTO helpers .- Learning
+    Common -. ошибки и DTO helpers .- Tasks

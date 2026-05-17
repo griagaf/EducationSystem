@@ -1,0 +1,24 @@
+erDiagram
+    users ||--|| user_profiles : has
+    users ||--o{ notes : owns
+    users ||--o{ learning_goals : owns
+    users ||--o{ tasks : owns
+    users ||--o{ ai_request_logs : owns
+
+    learning_goals ||--o{ study_materials : has
+    learning_goals ||--o{ topics : has
+    learning_goals ||--|| roadmaps : has
+    learning_goals ||--o{ tasks : has
+    learning_goals ||--o{ flashcards : has
+    learning_goals ||--o{ knowledge_nodes : has
+    learning_goals ||--o{ knowledge_edges : has
+
+    study_materials ||--o{ topics : extracts
+    roadmaps ||--o{ roadmap_steps : contains
+    topics ||--o{ roadmap_steps : structures
+    topics ||--o{ tasks : covers
+    topics ||--o{ flashcards : trains
+    roadmap_steps ||--o{ tasks : generates
+    flashcards ||--o{ flashcard_reviews : reviewed_by
+    knowledge_nodes ||--o{ knowledge_edges : source
+    knowledge_nodes ||--o{ knowledge_edges : target

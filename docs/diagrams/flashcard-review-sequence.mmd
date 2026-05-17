@@ -1,0 +1,14 @@
+sequenceDiagram
+    participant U as Пользователь
+    participant F as Frontend
+    participant B as Backend
+    participant DB as PostgreSQL
+
+    U->>F: Прохождение flashcard
+    F->>B: POST /api/v1/flashcards/{id}/reviews
+    B->>B: Проверка JWT и доступа пользователя
+    B->>DB: Сохранение FlashcardReview
+    B->>B: Пересчет Topic.masteryScore
+    B->>DB: Обновление Topic
+    B-->>F: Результат review и mastery score
+    F-->>U: Отображение обновленного mastery

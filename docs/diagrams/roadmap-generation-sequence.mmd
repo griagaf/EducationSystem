@@ -1,0 +1,17 @@
+sequenceDiagram
+    participant U as Пользователь
+    participant F as Frontend
+    participant B as Backend
+    participant A as AI-service
+    participant DB as PostgreSQL
+
+    U->>F: Запуск генерации roadmap
+    F->>B: POST /api/v1/goals/{id}/generate-roadmap
+    B->>B: Проверка JWT и доступа пользователя
+    B->>DB: Загрузка цели, topics и материалов
+    B->>A: POST /api/ai/generate-roadmap
+    A-->>B: Структурированный roadmap JSON
+    B->>B: Проверка AI-ответа
+    B->>DB: Сохранение roadmap, steps и tasks
+    B-->>F: Roadmap и созданные tasks
+    F-->>U: Отображение roadmap

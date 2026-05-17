@@ -1,0 +1,18 @@
+flowchart LR
+    Browser[Browser] --> Frontend[React Frontend]
+    Frontend -->|REST /api/v1| Backend[Spring Boot Backend]
+    Backend -->|SQL/JPA| Postgres[(PostgreSQL)]
+    Backend -->|Внутренний HTTP /api/ai| AI[FastAPI AI-service]
+    AI -. без доступа к БД .-> Backend
+
+    subgraph BackendModules[Модули backend]
+        Auth[auth]
+        User[user]
+        Notes[notes]
+        Learning[learning]
+        Tasks[tasks]
+        Dashboard[dashboard]
+        AiModule[ai]
+    end
+
+    Backend --- BackendModules

@@ -1,0 +1,25 @@
+sequenceDiagram
+    participant U as Пользователь
+    participant F as Frontend
+    participant B as Backend
+    participant A as AI-service
+    participant DB as PostgreSQL
+
+    U->>F: Создание LearningGoal
+    F->>B: POST /api/v1/goals
+    B->>DB: Сохранение LearningGoal
+    U->>F: Загрузка материала
+    F->>B: POST /api/v1/goals/{id}/materials
+    B->>DB: Сохранение StudyMaterial
+    B->>A: POST /api/ai/extract-topics
+    A-->>B: Topics JSON
+    B->>DB: Сохранение Topics
+    F->>B: POST /api/v1/goals/{id}/generate-roadmap
+    B->>A: POST /api/ai/generate-roadmap
+    A-->>B: Roadmap JSON
+    B->>DB: Сохранение roadmap и tasks
+    F->>B: POST /api/v1/goals/{id}/flashcards/generate
+    B->>A: POST /api/ai/generate-flashcards
+    A-->>B: Flashcards JSON
+    B->>DB: Сохранение Flashcards
+    F-->>U: Отображение progress, topics и cards
