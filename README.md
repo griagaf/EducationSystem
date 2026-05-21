@@ -162,17 +162,25 @@ docker compose up --build
 - `POST http://localhost:8080/api/v1/auth/register`;
 - `POST http://localhost:8080/api/v1/auth/login`;
 - `GET http://localhost:8080/api/v1/auth/me`.
+- `GET http://localhost:8080/api/v1/goals`;
+- `POST http://localhost:8080/api/v1/goals`;
+- `GET http://localhost:8080/api/v1/goals/{goalId}`;
+- `PUT http://localhost:8080/api/v1/goals/{goalId}`;
+- `DELETE http://localhost:8080/api/v1/goals/{goalId}`.
 
-`GET /api/v1/auth/me` требует заголовок `Authorization: Bearer <accessToken>`.
+`GET /api/v1/auth/me` и Learning Goals endpoints требуют заголовок `Authorization: Bearer <accessToken>`.
 
 Доступные frontend routes текущего этапа:
 
 - `http://localhost:3000/login`;
 - `http://localhost:3000/register`;
 - `http://localhost:3000/dashboard`.
+- `http://localhost:3000/goals`;
+- `http://localhost:3000/goals/{goalId}`.
 
 Frontend поддерживает login, register, logout, хранение JWT и protected routes.
-Учебные цели, заметки, задачи, dashboard data и AI-функции будут добавляться следующими этапами.
+Frontend поддерживает создание и просмотр учебных целей.
+Заметки, задачи, roadmap, dashboard data и AI-функции будут добавляться следующими этапами.
 
 ## 10. Переменные окружения
 

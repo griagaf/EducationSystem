@@ -12,7 +12,9 @@ const titles: Record<string, string> = {
 
 export function AppLayout() {
   const location = useLocation();
-  const title = titles[location.pathname] ?? 'Workspace';
+  const title = location.pathname.startsWith('/goals/')
+    ? 'Learning Goal'
+    : titles[location.pathname] ?? 'Workspace';
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-950">
