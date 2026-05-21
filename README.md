@@ -168,8 +168,11 @@ docker compose up --build
 - `GET http://localhost:8080/api/v1/goals/{goalId}`;
 - `PUT http://localhost:8080/api/v1/goals/{goalId}`;
 - `DELETE http://localhost:8080/api/v1/goals/{goalId}`.
+- `POST http://localhost:8080/api/v1/goals/{goalId}/generate-roadmap`;
+- `GET http://localhost:8080/api/v1/goals/{goalId}/roadmap`;
+- `GET http://localhost:8080/api/v1/roadmaps/{roadmapId}`.
 
-`GET /api/v1/auth/me` и Learning Goals endpoints требуют заголовок `Authorization: Bearer <accessToken>`.
+`GET /api/v1/auth/me`, Learning Goals endpoints и Roadmap endpoints требуют заголовок `Authorization: Bearer <accessToken>`.
 
 Доступные frontend routes текущего этапа:
 
@@ -181,8 +184,9 @@ docker compose up --build
 
 Frontend поддерживает login, register, logout, хранение JWT и protected routes.
 Frontend поддерживает создание и просмотр учебных целей.
-AI-service поддерживает генерацию structured roadmap через внутренний endpoint. Интеграция этого endpoint со Spring Boot backend будет добавлена следующим этапом.
-Заметки, задачи, сохранение roadmap и dashboard data будут добавляться следующими этапами.
+AI-service поддерживает генерацию structured roadmap через внутренний endpoint.
+Backend поддерживает генерацию и сохранение roadmap, topics и roadmap steps через AI-service.
+Заметки, задачи, автоматическое создание tasks из roadmap и dashboard data будут добавляться следующими этапами.
 
 ## 10. Переменные окружения
 

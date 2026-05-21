@@ -700,12 +700,12 @@ Response body:
     "steps": [
       {
         "id": "uuid",
-        "stepNumber": 1,
+        "topicId": "uuid",
         "title": "Основы Java backend",
         "description": "HTTP, REST, SQL и базовые принципы backend",
-        "topicId": "uuid",
-        "status": "NOT_STARTED",
-        "durationWeeks": 2
+        "orderIndex": 1,
+        "estimatedDays": 14,
+        "status": "NOT_STARTED"
       }
     ]
   },
@@ -717,14 +717,7 @@ Response body:
       "difficultyLevel": "EASY"
     }
   ],
-  "createdTasks": [
-    {
-      "id": "uuid",
-      "title": "Повторить HTTP методы",
-      "status": "TODO",
-      "priority": "MEDIUM"
-    }
-  ]
+  "createdTasks": []
 }
 ```
 
@@ -760,19 +753,12 @@ Response body:
   "steps": [
     {
       "id": "uuid",
-      "stepNumber": 1,
+      "topicId": "uuid",
       "title": "Основы Java backend",
       "description": "HTTP, REST, SQL и базовые принципы backend",
+      "orderIndex": 1,
+      "estimatedDays": 14,
       "status": "NOT_STARTED",
-      "durationWeeks": 2,
-      "tasks": [
-        {
-          "id": "uuid",
-          "title": "Повторить HTTP методы",
-          "status": "TODO",
-          "priority": "MEDIUM"
-        }
-      ]
     }
   ]
 }
@@ -805,11 +791,12 @@ Response body:
   "steps": [
     {
       "id": "uuid",
-      "stepNumber": 1,
+      "topicId": "uuid",
       "title": "Основы Java backend",
       "description": "HTTP, REST, SQL и базовые принципы backend",
-      "status": "NOT_STARTED",
-      "durationWeeks": 2
+      "orderIndex": 1,
+      "estimatedDays": 14,
+      "status": "NOT_STARTED"
     }
   ]
 }

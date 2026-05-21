@@ -369,9 +369,7 @@ Response DTO:
 - `id`;
 - `goal`;
 - `title`;
-- `summary`;
-- `sourcePrompt`;
-- `generatedBy`;
+- `description`;
 - `createdAt`;
 - `updatedAt`.
 
@@ -384,6 +382,7 @@ Response DTO:
 - `title`;
 - `description`;
 - `estimatedDays`;
+- `status`;
 - `createdAt`;
 - `updatedAt`.
 

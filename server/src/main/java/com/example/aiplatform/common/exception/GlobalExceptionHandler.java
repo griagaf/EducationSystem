@@ -55,6 +55,21 @@ public class GlobalExceptionHandler {
         return error(HttpStatus.NOT_FOUND, "RESOURCE_NOT_FOUND", exception.getMessage(), Map.of());
     }
 
+    @ExceptionHandler(RoadmapAlreadyExistsException.class)
+    ResponseEntity<ApiErrorResponse> handleRoadmapAlreadyExists(RoadmapAlreadyExistsException exception) {
+        return error(HttpStatus.CONFLICT, "ROADMAP_ALREADY_EXISTS", exception.getMessage(), Map.of());
+    }
+
+    @ExceptionHandler(InvalidAiResponseException.class)
+    ResponseEntity<ApiErrorResponse> handleInvalidAiResponse(InvalidAiResponseException exception) {
+        return error(HttpStatus.BAD_GATEWAY, "INVALID_AI_RESPONSE", exception.getMessage(), Map.of());
+    }
+
+    @ExceptionHandler(AiServiceException.class)
+    ResponseEntity<ApiErrorResponse> handleAiService(AiServiceException exception) {
+        return error(HttpStatus.SERVICE_UNAVAILABLE, "AI_SERVICE_UNAVAILABLE", exception.getMessage(), Map.of());
+    }
+
     @ExceptionHandler(Exception.class)
     ResponseEntity<ApiErrorResponse> handleUnexpected(Exception exception) {
         return error(
