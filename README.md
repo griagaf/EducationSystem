@@ -164,7 +164,15 @@ docker compose up --build
 - `GET http://localhost:8080/api/v1/auth/me`.
 
 `GET /api/v1/auth/me` требует заголовок `Authorization: Bearer <accessToken>`.
-Frontend auth UI, учебные цели, заметки, задачи и AI-функции будут добавляться следующими этапами.
+
+Доступные frontend routes текущего этапа:
+
+- `http://localhost:3000/login`;
+- `http://localhost:3000/register`;
+- `http://localhost:3000/dashboard`.
+
+Frontend поддерживает login, register, logout, хранение JWT и protected routes.
+Учебные цели, заметки, задачи, dashboard data и AI-функции будут добавляться следующими этапами.
 
 ## 10. Переменные окружения
 
