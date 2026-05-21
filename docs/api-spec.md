@@ -49,7 +49,33 @@ Authorization: Bearer <accessToken>
 - `503 Service Unavailable` - AI-service недоступен;
 - `504 Gateway Timeout` - timeout при обращении к AI-service.
 
-## 3. Auth API
+## 3. System API
+
+### GET /api/v1/health
+
+Назначение: проверка доступности Spring Boot backend.
+
+Метод: `GET`
+
+JWT: не требуется.
+
+Request body: отсутствует.
+
+Response body:
+
+```json
+{
+  "status": "UP",
+  "service": "backend",
+  "timestamp": "2026-05-21T12:46:51Z"
+}
+```
+
+Возможные ошибки:
+
+- `500 Internal Server Error` - backend запущен, но не может обработать запрос.
+
+## 4. Auth API
 
 ### POST /api/v1/auth/register
 
@@ -150,7 +176,7 @@ Response body:
 - `404 Not Found` - пользователь не найден;
 - `500 Internal Server Error` - ошибка получения пользователя.
 
-## 4. Notes API
+## 5. Notes API
 
 ### GET /api/v1/notes
 
@@ -311,7 +337,7 @@ Response body:
 - `404 Not Found` - заметка не найдена или принадлежит другому пользователю;
 - `500 Internal Server Error` - ошибка удаления заметки.
 
-## 5. Learning Goals API
+## 6. Learning Goals API
 
 ### GET /api/v1/goals
 
@@ -507,7 +533,7 @@ Response body:
 - `404 Not Found` - цель не найдена или принадлежит другому пользователю;
 - `500 Internal Server Error` - ошибка удаления цели.
 
-## 6. Study Materials API
+## 7. Study Materials API
 
 ### POST /api/v1/goals/{id}/materials
 
@@ -610,7 +636,7 @@ Response body:
 - `502 Bad Gateway` - AI-service вернул некорректный ответ;
 - `503 Service Unavailable` - AI-service недоступен.
 
-## 7. Topics API
+## 8. Topics API
 
 ### GET /api/v1/goals/{id}/topics
 
@@ -643,7 +669,7 @@ Response body:
 - `404 Not Found` - учебная цель не найдена;
 - `500 Internal Server Error` - ошибка получения topics.
 
-## 8. Roadmap API
+## 9. Roadmap API
 
 ### POST /api/v1/goals/{id}/generate-roadmap
 
@@ -795,7 +821,7 @@ Response body:
 - `404 Not Found` - roadmap не найден или принадлежит цели другого пользователя;
 - `500 Internal Server Error` - ошибка получения roadmap.
 
-## 9. Tasks API
+## 10. Tasks API
 
 ### GET /api/v1/tasks
 
@@ -983,7 +1009,7 @@ Response body:
 - `404 Not Found` - задача не найдена или принадлежит другому пользователю;
 - `500 Internal Server Error` - ошибка изменения статуса.
 
-## 10. Flashcards API
+## 11. Flashcards API
 
 ### POST /api/v1/goals/{id}/flashcards/generate
 
@@ -1093,7 +1119,7 @@ Response body:
 - `404 Not Found` - flashcard не найдена;
 - `500 Internal Server Error` - ошибка сохранения review.
 
-## 11. Knowledge Graph API
+## 12. Knowledge Graph API
 
 ### GET /api/v1/goals/{id}/knowledge-graph
 
@@ -1137,7 +1163,7 @@ Response body:
 - `404 Not Found` - учебная цель не найдена;
 - `500 Internal Server Error` - ошибка получения graph.
 
-## 12. Dashboard API
+## 13. Dashboard API
 
 ### GET /api/v1/dashboard/summary
 
@@ -1198,7 +1224,7 @@ Response body:
 - `401 Unauthorized` - JWT отсутствует или недействителен;
 - `500 Internal Server Error` - ошибка получения dashboard summary.
 
-## 13. AI-service Internal API
+## 14. AI-service Internal API
 
 Эти endpoints вызываются Spring Boot backend. Frontend не обращается к AI-service напрямую.
 
@@ -1307,7 +1333,7 @@ Response body:
 - `503 Service Unavailable` - AI-провайдер недоступен;
 - `504 Gateway Timeout` - истекло время ожидания ответа AI-провайдера.
 
-## 14. Правила принадлежности данных
+## 15. Правила принадлежности данных
 
 Все защищенные endpoints возвращают и изменяют только данные текущего пользователя.
 

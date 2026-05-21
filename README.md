@@ -87,7 +87,7 @@ PostgreSQL        FastAPI AI-service
 
 ```text
 EducationSystem/
-  ├── backend/
+  ├── server/
   ├── client/
   ├── ai-service/
   ├── docs/
@@ -153,11 +153,11 @@ docker compose up --build
 
 Проверки после запуска:
 
-- backend health endpoint отвечает успешно;
-- AI-service health endpoint отвечает успешно;
-- frontend открывается в браузере;
-- регистрация и вход работают;
-- основной сценарий обучения проходит без ручного вмешательства в БД.
+- backend health endpoint отвечает: `GET http://localhost:8080/api/v1/health`;
+- AI-service health endpoint отвечает: `GET http://localhost:8000/health`;
+- frontend открывается: `http://localhost:3000`.
+
+На этапе Project Foundation бизнес-сценарии, регистрация, авторизация и AI-функции еще не реализованы.
 
 ## 10. Переменные окружения
 

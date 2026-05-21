@@ -71,7 +71,7 @@ Backend логирует:
 Backend:
 
 ```text
-GET /health
+GET /api/v1/health
 ```
 
 AI-service:
