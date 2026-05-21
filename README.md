@@ -155,6 +155,7 @@ docker compose up --build
 
 - backend health endpoint отвечает: `GET http://localhost:8080/api/v1/health`;
 - AI-service health endpoint отвечает: `GET http://localhost:8000/health`;
+- AI-service roadmap endpoint в режиме graceful degradation отвечает: `POST http://localhost:8000/api/ai/generate-roadmap`;
 - frontend открывается: `http://localhost:3000`.
 
 Доступные backend endpoints текущего этапа:
@@ -180,7 +181,8 @@ docker compose up --build
 
 Frontend поддерживает login, register, logout, хранение JWT и protected routes.
 Frontend поддерживает создание и просмотр учебных целей.
-Заметки, задачи, roadmap, dashboard data и AI-функции будут добавляться следующими этапами.
+AI-service поддерживает генерацию structured roadmap через внутренний endpoint. Интеграция этого endpoint со Spring Boot backend будет добавлена следующим этапом.
+Заметки, задачи, сохранение roadmap и dashboard data будут добавляться следующими этапами.
 
 ## 10. Переменные окружения
 

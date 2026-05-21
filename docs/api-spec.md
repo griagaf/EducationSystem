@@ -1241,15 +1241,9 @@ Request body:
   "goal_title": "Изучить Java Spring Boot",
   "goal_description": "Хочу изучить Spring Boot за 12 недель",
   "goal_type": "TECHNOLOGY_LEARNING",
-  "duration_weeks": 12,
-  "user_level": "beginner",
-  "topics": [
-    {
-      "title": "Spring IoC",
-      "description": "Dependency injection basics"
-    }
-  ],
-  "materials_summary": "Extracted text summary"
+  "target_date": "2026-08-15",
+  "estimated_duration_weeks": 12,
+  "user_level": "beginner"
 }
 ```
 
@@ -1259,8 +1253,25 @@ Response body:
 {
   "roadmap_title": "Java Spring Boot за 12 недель",
   "roadmap_description": "План изучения Spring Boot",
-  "steps": [],
-  "tasks": []
+  "steps": [
+    {
+      "title": "Основы Java backend",
+      "description": "HTTP, REST, SQL и базовые принципы backend-разработки",
+      "order_index": 1,
+      "estimated_days": 14,
+      "topics": [
+        "HTTP и REST",
+        "SQL basics"
+      ],
+      "tasks": [
+        {
+          "title": "Повторить HTTP методы",
+          "description": "Разобрать GET, POST, PUT, PATCH, DELETE и основные status codes",
+          "priority": "MEDIUM"
+        }
+      ]
+    }
+  ]
 }
 ```
 

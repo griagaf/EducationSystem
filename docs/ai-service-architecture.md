@@ -197,10 +197,9 @@ Request содержит:
 - `goal_title` - краткое название учебной цели;
 - `goal_description` - подробное описание цели;
 - `goal_type` - тип цели;
-- `duration_weeks` - желаемая длительность обучения в неделях;
+- `target_date` - желаемая дата завершения, если задана;
+- `estimated_duration_weeks` - планируемая длительность обучения в неделях;
 - `user_level` - уровень пользователя.
-- `topics` - существующие темы, если они уже извлечены;
-- `materials_summary` - краткая выжимка из материалов.
 
 Пример значений:
 
@@ -209,15 +208,9 @@ Request содержит:
   "goal_title": "Изучить Java Spring Boot",
   "goal_description": "Хочу изучить Java Spring Boot за 3 месяца и сделать pet project",
   "goal_type": "TECHNOLOGY_LEARNING",
-  "duration_weeks": 12,
-  "user_level": "beginner",
-  "topics": [
-    {
-      "title": "Spring IoC",
-      "description": "Dependency injection basics"
-    }
-  ],
-  "materials_summary": "Extracted text summary"
+  "target_date": "2026-08-15",
+  "estimated_duration_weeks": 12,
+  "user_level": "beginner"
 }
 ```
 
@@ -226,8 +219,9 @@ Request содержит:
 - `goal_title` обязателен и не должен быть пустым;
 - `goal_description` обязателен и не должен быть пустым;
 - `goal_type` должен быть одним из `SELF_STUDY`, `EXAM_PREPARATION`, `INTERVIEW_PREPARATION`, `TECHNOLOGY_LEARNING`;
-- `duration_weeks` должен быть положительным числом;
-- `duration_weeks` для базовой версии системы рекомендуется ограничить диапазоном 1-52;
+- хотя бы одно из полей `target_date` или `estimated_duration_weeks` должно быть задано;
+- `estimated_duration_weeks` должен быть положительным числом;
+- `estimated_duration_weeks` для базовой версии системы рекомендуется ограничить диапазоном 1-52;
 - `user_level` должен принимать одно из значений:
   - `beginner`;
   - `intermediate`;
@@ -240,7 +234,6 @@ Response содержит:
 - `roadmap_title` - название roadmap;
 - `roadmap_description` - краткое описание roadmap;
 - `steps[]` - этапы roadmap;
-- `tasks[]` - задачи для автоматического создания в backend.
 - для `extract-topics`: `topics[]`;
 - для `generate-flashcards`: `flashcards[]`.
 
@@ -252,18 +245,21 @@ Response содержит:
   "roadmap_description": "План изучения Spring Boot от базовых концепций до pet project",
   "steps": [
     {
-      "step_number": 1,
-      "topic_title": "Java backend basics",
       "title": "Основы Java backend",
       "description": "Повторить HTTP, REST, SQL и базовые принципы backend-разработки",
-      "duration_weeks": 2
-    }
-  ],
-  "tasks": [
-    {
-      "step_number": 1,
-      "title": "Повторить HTTP методы",
-      "description": "Разобрать GET, POST, PUT, PATCH, DELETE и основные status codes"
+      "order_index": 1,
+      "estimated_days": 14,
+      "topics": [
+        "HTTP и REST",
+        "SQL basics"
+      ],
+      "tasks": [
+        {
+          "title": "Повторить HTTP методы",
+          "description": "Разобрать GET, POST, PUT, PATCH, DELETE и основные status codes",
+          "priority": "MEDIUM"
+        }
+      ]
     }
   ]
 }
@@ -275,10 +271,10 @@ Response содержит:
 - `roadmap_title` не должен быть пустым;
 - `roadmap_description` не должен быть пустым;
 - `steps` должен содержать минимум один этап;
-- каждый step должен иметь `step_number`, `title`, `description`;
-- `step_number` должен соответствовать существующему этапу;
-- `tasks` должен содержать задачи, связанные с этапами;
-- каждая task должна иметь `step_number`, `title`, `description`.
+- каждый step должен иметь `order_index`, `title`, `description`, `estimated_days`;
+- `order_index` должен быть положительным и задавать порядок этапа;
+- каждый step должен содержать `topics[]` и `tasks[]`;
+- каждая task должна иметь `title`, `description`, `priority`.
 
 Spring Boot backend сохраняет roadmap, steps и tasks в свою базу данных.
 

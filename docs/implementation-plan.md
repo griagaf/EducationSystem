@@ -301,7 +301,7 @@ AI-service запускается и может возвращать тесто�
 - Запустить AI-service.
 - Вызвать health endpoint.
 - Вызвать генерацию roadmap с примерной целью.
-- Проверить, что ответ содержит `roadmap_title`, `roadmap_description`, `steps`, `tasks`.
+- Проверить, что ответ содержит `roadmap_title`, `roadmap_description`, `steps`, а задачи находятся внутри каждого step в поле `tasks`.
 
 ### Какие тесты написать
 
