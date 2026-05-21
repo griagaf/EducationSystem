@@ -1,5 +1,8 @@
-package com.example.aiplatform.learning.entity;
+package com.example.aiplatform.tasks.entity;
 
+import com.example.aiplatform.learning.entity.LearningGoal;
+import com.example.aiplatform.learning.entity.RoadmapStep;
+import com.example.aiplatform.learning.entity.Topic;
 import com.example.aiplatform.user.entity.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -17,8 +20,8 @@ import java.time.LocalDate;
 import java.util.UUID;
 
 @Entity
-@Table(name = "learning_goals")
-public class LearningGoal {
+@Table(name = "tasks")
+public class Task {
 
     @Id
     private UUID id;
@@ -27,28 +30,34 @@ public class LearningGoal {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "learning_goal_id", nullable = false)
+    private LearningGoal learningGoal;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "roadmap_step_id")
+    private RoadmapStep roadmapStep;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "topic_id")
+    private Topic topic;
+
     @Column(nullable = false, length = 255)
     private String title;
 
-    @Column(nullable = false, columnDefinition = "text")
+    @Column(columnDefinition = "text")
     private String description;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 50)
-    private LearningGoalType type;
+    private TaskStatus status;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 50)
-    private LearningGoalStatus status;
+    private TaskPriority priority;
 
-    @Column(name = "target_date")
-    private LocalDate targetDate;
-
-    @Column(name = "duration_weeks")
-    private Integer estimatedDurationWeeks;
-
-    @Column(name = "progress_percent", nullable = false)
-    private int progressPercent;
+    @Column(name = "due_date")
+    private LocalDate dueDate;
 
     @Column(name = "created_at", nullable = false)
     private Instant createdAt;
@@ -56,25 +65,28 @@ public class LearningGoal {
     @Column(name = "updated_at", nullable = false)
     private Instant updatedAt;
 
-    protected LearningGoal() {
+    protected Task() {
     }
 
-    public LearningGoal(
+    public Task(
             User user,
+            LearningGoal learningGoal,
+            RoadmapStep roadmapStep,
+            Topic topic,
             String title,
             String description,
-            LearningGoalType type,
-            LocalDate targetDate,
-            Integer estimatedDurationWeeks
+            TaskPriority priority,
+            LocalDate dueDate
     ) {
         this.user = user;
+        this.learningGoal = learningGoal;
+        this.roadmapStep = roadmapStep;
+        this.topic = topic;
         this.title = title;
         this.description = description;
-        this.type = type;
-        this.targetDate = targetDate;
-        this.estimatedDurationWeeks = estimatedDurationWeeks;
-        this.status = LearningGoalStatus.ACTIVE;
-        this.progressPercent = 0;
+        this.status = TaskStatus.TODO;
+        this.priority = priority == null ? TaskPriority.MEDIUM : priority;
+        this.dueDate = dueDate;
     }
 
     @PrePersist
@@ -86,7 +98,10 @@ public class LearningGoal {
         createdAt = now;
         updatedAt = now;
         if (status == null) {
-            status = LearningGoalStatus.ACTIVE;
+            status = TaskStatus.TODO;
+        }
+        if (priority == null) {
+            priority = TaskPriority.MEDIUM;
         }
     }
 
@@ -95,31 +110,15 @@ public class LearningGoal {
         updatedAt = Instant.now();
     }
 
-    public void update(
-            String title,
-            String description,
-            LearningGoalType type,
-            LearningGoalStatus status,
-            LocalDate targetDate,
-            Integer estimatedDurationWeeks
-    ) {
+    public void update(String title, String description, TaskPriority priority, LocalDate dueDate) {
         this.title = title;
         this.description = description;
-        this.type = type;
+        this.priority = priority;
+        this.dueDate = dueDate;
+    }
+
+    public void changeStatus(TaskStatus status) {
         this.status = status;
-        this.targetDate = targetDate;
-        this.estimatedDurationWeeks = estimatedDurationWeeks;
-    }
-
-    public void archive() {
-        this.status = LearningGoalStatus.ARCHIVED;
-    }
-
-    public void updateProgressPercent(int progressPercent) {
-        if (progressPercent < 0 || progressPercent > 100) {
-            throw new IllegalArgumentException("Progress percent must be between 0 and 100");
-        }
-        this.progressPercent = progressPercent;
     }
 
     public UUID getId() {
@@ -130,6 +129,18 @@ public class LearningGoal {
         return user;
     }
 
+    public LearningGoal getLearningGoal() {
+        return learningGoal;
+    }
+
+    public RoadmapStep getRoadmapStep() {
+        return roadmapStep;
+    }
+
+    public Topic getTopic() {
+        return topic;
+    }
+
     public String getTitle() {
         return title;
     }
@@ -138,24 +149,16 @@ public class LearningGoal {
         return description;
     }
 
-    public LearningGoalType getType() {
-        return type;
-    }
-
-    public LearningGoalStatus getStatus() {
+    public TaskStatus getStatus() {
         return status;
     }
 
-    public LocalDate getTargetDate() {
-        return targetDate;
+    public TaskPriority getPriority() {
+        return priority;
     }
 
-    public Integer getEstimatedDurationWeeks() {
-        return estimatedDurationWeeks;
-    }
-
-    public int getProgressPercent() {
-        return progressPercent;
+    public LocalDate getDueDate() {
+        return dueDate;
     }
 
     public Instant getCreatedAt() {

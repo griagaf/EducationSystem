@@ -8,13 +8,18 @@ import { Card } from '../components/ui/Card';
 import { Spinner } from '../components/ui/Spinner';
 import { GoalStatusBadge } from '../features/learning/GoalStatusBadge';
 import { learningGoalTypeLabels } from '../features/learning/learningLabels';
+import { TaskStatusBadge } from '../features/tasks/TaskStatusBadge';
+import { taskPriorityLabels } from '../features/tasks/taskLabels';
 import { getApiErrorMessage } from '../services/apiClient';
 import { learningService } from '../services/learningService';
+import { taskService } from '../services/taskService';
 import type { LearningGoal } from '../types/learning';
+import type { Task } from '../types/tasks';
 
 export function LearningGoalDetailsPage() {
   const { goalId } = useParams();
   const [goal, setGoal] = useState<LearningGoal | null>(null);
+  const [tasks, setTasks] = useState<Task[]>([]);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(true);
 
@@ -29,9 +34,13 @@ export function LearningGoalDetailsPage() {
       }
 
       try {
-        const data = await learningService.getGoal(goalId);
+        const [goalData, taskData] = await Promise.all([
+          learningService.getGoal(goalId),
+          taskService.getTasks({ learningGoalId: goalId }),
+        ]);
         if (active) {
-          setGoal(data);
+          setGoal(goalData);
+          setTasks(taskData);
         }
       } catch (requestError) {
         if (active) {
@@ -109,11 +118,48 @@ export function LearningGoalDetailsPage() {
           <div>
             <h3 className="text-lg font-semibold text-slate-950">Roadmap</h3>
             <p className="mt-2 text-sm leading-6 text-slate-600">
-              Roadmap generation будет добавлена на отдельном этапе.
+              Roadmap отображается после генерации через backend API.
             </p>
           </div>
-          <Badge tone="slate">Not connected</Badge>
+          <Badge tone="slate">API ready</Badge>
         </div>
+      </Card>
+
+      <Card>
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <div>
+            <h3 className="text-lg font-semibold text-slate-950">Связанные задачи</h3>
+            <p className="mt-2 text-sm leading-6 text-slate-600">
+              Задачи появляются после генерации roadmap или ручного создания.
+            </p>
+          </div>
+          <Link to="/tasks">
+            <Button variant="secondary">Открыть все задачи</Button>
+          </Link>
+        </div>
+
+        {tasks.length === 0 ? (
+          <div className="mt-5 rounded-lg border border-dashed border-slate-300 bg-slate-50 px-4 py-5 text-sm text-slate-600">
+            Для этой цели пока нет задач.
+          </div>
+        ) : (
+          <div className="mt-5 divide-y divide-slate-200">
+            {tasks.slice(0, 5).map((task) => (
+              <div
+                className="flex flex-wrap items-center justify-between gap-3 py-3"
+                key={task.id}
+              >
+                <div className="min-w-0">
+                  <div className="font-semibold text-slate-950">{task.title}</div>
+                  <div className="mt-1 text-xs text-slate-500">
+                    Приоритет: {taskPriorityLabels[task.priority]}
+                  </div>
+                </div>
+                <TaskStatusBadge status={task.status} />
+              </div>
+            ))}
+          </div>
+        )}
       </Card>
     </div>
   );

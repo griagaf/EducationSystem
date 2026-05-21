@@ -717,7 +717,14 @@ Response body:
       "difficultyLevel": "EASY"
     }
   ],
-  "createdTasks": []
+  "createdTasks": [
+    {
+      "id": "uuid",
+      "title": "Повторить HTTP методы",
+      "status": "TODO",
+      "priority": "MEDIUM"
+    }
+  ]
 }
 ```
 
@@ -820,6 +827,12 @@ JWT: требуется.
 
 Request body: отсутствует.
 
+Query parameters:
+
+- `status` - опционально: `TODO`, `IN_PROGRESS`, `DONE`, `CANCELLED`;
+- `priority` - опционально: `LOW`, `MEDIUM`, `HIGH`;
+- `learningGoalId` - опционально, UUID учебной цели.
+
 Response body:
 
 ```json
@@ -827,6 +840,7 @@ Response body:
   {
     "id": "uuid",
     "learningGoalId": "uuid",
+    "learningGoalTitle": "Изучить Java Spring Boot",
     "roadmapStepId": "uuid",
     "topicId": "uuid",
     "title": "Повторить HTTP методы",
@@ -844,6 +858,41 @@ Response body:
 
 - `401 Unauthorized` - JWT отсутствует или недействителен;
 - `500 Internal Server Error` - ошибка получения задач.
+
+### GET /api/v1/tasks/{taskId}
+
+Назначение: получение одной задачи текущего пользователя.
+
+Метод: `GET`
+
+JWT: требуется.
+
+Request body: отсутствует.
+
+Response body:
+
+```json
+{
+  "id": "uuid",
+  "learningGoalId": "uuid",
+  "learningGoalTitle": "Изучить Java Spring Boot",
+  "roadmapStepId": "uuid",
+  "topicId": "uuid",
+  "title": "Повторить HTTP методы",
+  "description": "Разобрать основные HTTP методы и status codes",
+  "status": "TODO",
+  "priority": "MEDIUM",
+  "dueDate": "2026-05-30",
+  "createdAt": "2026-05-15T10:00:00Z",
+  "updatedAt": "2026-05-15T10:00:00Z"
+}
+```
+
+Возможные ошибки:
+
+- `401 Unauthorized` - JWT отсутствует или недействителен;
+- `404 Not Found` - задача не найдена или принадлежит другому пользователю;
+- `500 Internal Server Error` - ошибка получения задачи.
 
 ### POST /api/v1/tasks
 
@@ -873,6 +922,7 @@ Response body:
 {
   "id": "uuid",
   "learningGoalId": "uuid",
+  "learningGoalTitle": "Изучить Java Spring Boot",
   "roadmapStepId": "uuid",
   "topicId": "uuid",
   "title": "Сделать REST API practice task",
@@ -892,7 +942,7 @@ Response body:
 - `404 Not Found` - цель или этап roadmap не найден;
 - `500 Internal Server Error` - ошибка создания задачи.
 
-### PUT /api/v1/tasks/{id}
+### PUT /api/v1/tasks/{taskId}
 
 Назначение: обновление задачи.
 
@@ -917,7 +967,9 @@ Response body:
 {
   "id": "uuid",
   "learningGoalId": "uuid",
+  "learningGoalTitle": "Изучить Java Spring Boot",
   "roadmapStepId": "uuid",
+  "topicId": "uuid",
   "title": "Сделать REST API practice project",
   "description": "Создать CRUD API для заметок",
   "status": "TODO",
@@ -935,7 +987,7 @@ Response body:
 - `404 Not Found` - задача не найдена или принадлежит другому пользователю;
 - `500 Internal Server Error` - ошибка обновления задачи.
 
-### DELETE /api/v1/tasks/{id}
+### DELETE /api/v1/tasks/{taskId}
 
 Назначение: удаление задачи.
 
@@ -949,8 +1001,7 @@ Response body:
 
 ```json
 {
-  "deleted": true,
-  "goalProgressPercent": 30
+  "deleted": true
 }
 ```
 
@@ -960,7 +1011,7 @@ Response body:
 - `404 Not Found` - задача не найдена или принадлежит другому пользователю;
 - `500 Internal Server Error` - ошибка удаления задачи.
 
-### PATCH /api/v1/tasks/{id}/status
+### PATCH /api/v1/tasks/{taskId}/status
 
 Назначение: изменение статуса задачи.
 
@@ -980,12 +1031,18 @@ Response body:
 
 ```json
 {
-  "task": {
-    "id": "uuid",
-    "status": "DONE",
-    "completedAt": "2026-05-15T12:00:00Z"
-  },
-  "goalProgressPercent": 42
+  "id": "uuid",
+  "learningGoalId": "uuid",
+  "learningGoalTitle": "Изучить Java Spring Boot",
+  "roadmapStepId": "uuid",
+  "topicId": "uuid",
+  "title": "Повторить HTTP методы",
+  "description": "Разобрать основные HTTP методы и status codes",
+  "status": "DONE",
+  "priority": "MEDIUM",
+  "dueDate": "2026-05-30",
+  "createdAt": "2026-05-15T10:00:00Z",
+  "updatedAt": "2026-05-15T12:00:00Z"
 }
 ```
 

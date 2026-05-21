@@ -558,7 +558,6 @@ Response DTO:
 - `status`;
 - `priority`;
 - `dueDate`;
-- `orderIndex`;
 - `createdAt`;
 - `updatedAt`.
 
@@ -611,6 +610,7 @@ Response DTO:
 
 - `GET /api/v1/tasks` - список задач текущего пользователя;
 - `POST /api/v1/tasks` - создать задачу;
+- `GET /api/v1/tasks/{taskId}` - получить задачу;
 - `PUT /api/v1/tasks/{taskId}` - обновить задачу;
 - `PATCH /api/v1/tasks/{taskId}/status` - изменить статус задачи;
 - `DELETE /api/v1/tasks/{taskId}` - удалить задачу.
@@ -884,6 +884,7 @@ Tasks:
 
 - `GET /api/v1/tasks`;
 - `POST /api/v1/tasks`;
+- `GET /api/v1/tasks/{taskId}`;
 - `PUT /api/v1/tasks/{taskId}`;
 - `PATCH /api/v1/tasks/{taskId}/status`;
 - `DELETE /api/v1/tasks/{taskId}`.

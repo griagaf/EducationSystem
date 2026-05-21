@@ -22,8 +22,9 @@ import com.example.aiplatform.learning.repository.LearningGoalRepository;
 import com.example.aiplatform.learning.repository.RoadmapRepository;
 import com.example.aiplatform.learning.repository.RoadmapStepRepository;
 import com.example.aiplatform.learning.repository.TopicRepository;
+import com.example.aiplatform.tasks.entity.Task;
+import com.example.aiplatform.tasks.service.TaskService;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,6 +43,7 @@ public class RoadmapGenerationService {
     private final RoadmapStepRepository roadmapStepRepository;
     private final TopicRepository topicRepository;
     private final AiRoadmapClient aiRoadmapClient;
+    private final TaskService taskService;
     private final TransactionTemplate transactionTemplate;
 
     public RoadmapGenerationService(
@@ -50,6 +52,7 @@ public class RoadmapGenerationService {
             RoadmapStepRepository roadmapStepRepository,
             TopicRepository topicRepository,
             AiRoadmapClient aiRoadmapClient,
+            TaskService taskService,
             PlatformTransactionManager transactionManager
     ) {
         this.learningGoalRepository = learningGoalRepository;
@@ -57,6 +60,7 @@ public class RoadmapGenerationService {
         this.roadmapStepRepository = roadmapStepRepository;
         this.topicRepository = topicRepository;
         this.aiRoadmapClient = aiRoadmapClient;
+        this.taskService = taskService;
         this.transactionTemplate = new TransactionTemplate(transactionManager);
     }
 
@@ -122,7 +126,16 @@ public class RoadmapGenerationService {
         List<TopicResponse> topicResponses = topicsByTitle.values().stream()
                 .map(this::toTopicResponse)
                 .toList();
-        return new GenerateRoadmapResponse(roadmapResponse, topicResponses, Collections.emptyList());
+        List<Task> createdTasks = taskService.createTasksFromRoadmap(goal, steps, aiResponse.steps());
+        List<CreatedTaskResponse> createdTaskResponses = createdTasks.stream()
+                .map(task -> new CreatedTaskResponse(
+                        task.getId(),
+                        task.getTitle(),
+                        task.getStatus().name(),
+                        task.getPriority().name()
+                ))
+                .toList();
+        return new GenerateRoadmapResponse(roadmapResponse, topicResponses, createdTaskResponses);
     }
 
     private Map<String, Topic> saveTopics(LearningGoal goal, List<AiRoadmapStepResponse> aiSteps) {

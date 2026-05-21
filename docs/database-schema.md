@@ -588,8 +588,6 @@ learning_goals 1:N tasks
 | `status` | `varchar(50)` | да | Статус задачи |
 | `priority` | `varchar(50)` | да | Приоритет задачи |
 | `due_date` | `date` | нет | Дедлайн |
-| `completed_at` | `timestamp with time zone` | нет | Дата выполнения |
-| `order_index` | `integer` | нет | Порядок отображения |
 | `created_at` | `timestamp with time zone` | да | Дата создания |
 | `updated_at` | `timestamp with time zone` | да | Дата обновления |
 
@@ -616,7 +614,6 @@ learning_goals 1:N tasks
 - `status` должен быть одним из `TODO`, `IN_PROGRESS`, `DONE`, `CANCELLED`;
 - `priority` - not null;
 - `priority` должен быть одним из `LOW`, `MEDIUM`, `HIGH`;
-- `order_index` должен быть null или больше 0;
 - `created_at` - not null;
 - `updated_at` - not null;
 
@@ -629,8 +626,7 @@ learning_goals 1:N tasks
 - index по `user_id, status`;
 - index по `learning_goal_id, status`;
 - index по `user_id, due_date`;
-- index по `user_id, priority`;
-- index по `roadmap_step_id, order_index`.
+- index по `user_id, priority`.
 
 ## 14. Таблица flashcards
 

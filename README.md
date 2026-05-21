@@ -171,8 +171,14 @@ docker compose up --build
 - `POST http://localhost:8080/api/v1/goals/{goalId}/generate-roadmap`;
 - `GET http://localhost:8080/api/v1/goals/{goalId}/roadmap`;
 - `GET http://localhost:8080/api/v1/roadmaps/{roadmapId}`.
+- `GET http://localhost:8080/api/v1/tasks`;
+- `POST http://localhost:8080/api/v1/tasks`;
+- `GET http://localhost:8080/api/v1/tasks/{taskId}`;
+- `PUT http://localhost:8080/api/v1/tasks/{taskId}`;
+- `DELETE http://localhost:8080/api/v1/tasks/{taskId}`;
+- `PATCH http://localhost:8080/api/v1/tasks/{taskId}/status`.
 
-`GET /api/v1/auth/me`, Learning Goals endpoints и Roadmap endpoints требуют заголовок `Authorization: Bearer <accessToken>`.
+`GET /api/v1/auth/me`, Learning Goals endpoints, Roadmap endpoints и Tasks endpoints требуют заголовок `Authorization: Bearer <accessToken>`.
 
 Доступные frontend routes текущего этапа:
 
@@ -181,12 +187,15 @@ docker compose up --build
 - `http://localhost:3000/dashboard`.
 - `http://localhost:3000/goals`;
 - `http://localhost:3000/goals/{goalId}`.
+- `http://localhost:3000/tasks`.
 
 Frontend поддерживает login, register, logout, хранение JWT и protected routes.
 Frontend поддерживает создание и просмотр учебных целей.
 AI-service поддерживает генерацию structured roadmap через внутренний endpoint.
 Backend поддерживает генерацию и сохранение roadmap, topics и roadmap steps через AI-service.
-Заметки, задачи, автоматическое создание tasks из roadmap и dashboard data будут добавляться следующими этапами.
+Backend автоматически создает tasks из roadmap и поддерживает ручное управление задачами.
+Frontend отображает список задач, фильтрацию по статусу и изменение статуса задачи.
+Заметки, flashcards, материалы и dashboard data будут добавляться следующими этапами.
 
 ## 10. Переменные окружения
 

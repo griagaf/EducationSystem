@@ -65,7 +65,10 @@ class RoadmapControllerIntegrationTest {
                 .andExpect(jsonPath("$.roadmap.steps[0].estimatedDays").value(7))
                 .andExpect(jsonPath("$.roadmap.steps[0].status").value("NOT_STARTED"))
                 .andExpect(jsonPath("$.topics.length()").value(3))
-                .andExpect(jsonPath("$.createdTasks.length()").value(0));
+                .andExpect(jsonPath("$.createdTasks.length()").value(2))
+                .andExpect(jsonPath("$.createdTasks[0].title").value("Повторить IoC"))
+                .andExpect(jsonPath("$.createdTasks[0].status").value("TODO"))
+                .andExpect(jsonPath("$.createdTasks[1].priority").value("HIGH"));
     }
 
     @Test
