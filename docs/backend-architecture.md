@@ -174,26 +174,42 @@ Response DTO:
 
 ### Entities
 
-- `User`.
+- `User`;
+- `UserProfile`.
 
 Основные поля:
+
+`User`:
 
 - `id`;
 - `email`;
 - `passwordHash`;
+- `role`;
+- `enabled`;
+- `createdAt`;
+- `updatedAt`.
+
+`UserProfile`:
+
+- `id`;
+- `user`;
 - `displayName`;
+- `bio`;
+- `timezone`;
 - `createdAt`;
 - `updatedAt`.
 
 ### Repositories
 
-- `UserRepository`.
+- `UserRepository`;
+- `UserProfileRepository`.
 
 Основные методы:
 
 - поиск по email;
 - проверка существования email;
 - поиск по id.
+- поиск профиля по user id.
 
 ### Services
 

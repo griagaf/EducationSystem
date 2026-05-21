@@ -157,13 +157,20 @@ docker compose up --build
 - AI-service health endpoint отвечает: `GET http://localhost:8000/health`;
 - frontend открывается: `http://localhost:3000`.
 
-На этапе Project Foundation бизнес-сценарии, регистрация, авторизация и AI-функции еще не реализованы.
+Доступные backend endpoints текущего этапа:
+
+- `POST http://localhost:8080/api/v1/auth/register`;
+- `POST http://localhost:8080/api/v1/auth/login`;
+- `GET http://localhost:8080/api/v1/auth/me`.
+
+`GET /api/v1/auth/me` требует заголовок `Authorization: Bearer <accessToken>`.
+Frontend auth UI, учебные цели, заметки, задачи и AI-функции будут добавляться следующими этапами.
 
 ## 10. Переменные окружения
 
 Минимальные группы настроек:
 
-- backend: `JWT_SECRET`, параметры подключения к PostgreSQL, URL AI-service;
+- backend: `JWT_SECRET`, `JWT_ACCESS_TOKEN_TTL`, параметры подключения к PostgreSQL, URL AI-service;
 - PostgreSQL: database name, user, password;
 - AI-service: API key AI-провайдера, model name, timeout;
 - frontend: базовый URL backend API.
