@@ -6,6 +6,10 @@ export type LearningGoalType =
 
 export type LearningGoalStatus = 'ACTIVE' | 'COMPLETED' | 'ARCHIVED';
 
+export type DifficultyLevel = 'EASY' | 'MEDIUM' | 'HARD';
+
+export type RoadmapStepStatus = 'NOT_STARTED' | 'IN_PROGRESS' | 'COMPLETED';
+
 export type LearningGoal = {
   id: string;
   title: string;
@@ -26,4 +30,51 @@ export type LearningGoalCreateRequest = {
   type: LearningGoalType;
   targetDate: string | null;
   durationWeeks: number | null;
+};
+
+export type Topic = {
+  id: string;
+  learningGoalId?: string;
+  title: string;
+  description?: string | null;
+  masteryScore: number;
+  difficultyLevel: DifficultyLevel;
+};
+
+export type RoadmapStep = {
+  id: string;
+  topicId: string | null;
+  title: string;
+  description: string;
+  orderIndex: number;
+  estimatedDays: number;
+  status: RoadmapStepStatus;
+};
+
+export type Roadmap = {
+  id: string;
+  learningGoalId: string;
+  title: string;
+  description: string;
+  steps: RoadmapStep[];
+  createdAt?: string;
+  updatedAt?: string;
+};
+
+export type CreatedTaskSummary = {
+  id: string;
+  title: string;
+  status: string;
+  priority: string;
+};
+
+export type GenerateRoadmapRequest = {
+  userLevel: 'beginner' | 'intermediate' | 'advanced';
+  includeMaterials: boolean;
+};
+
+export type GenerateRoadmapResponse = {
+  roadmap: Roadmap;
+  topics: Topic[];
+  createdTasks: CreatedTaskSummary[];
 };
