@@ -6,6 +6,7 @@ import type {
   LearningGoal,
   LearningGoalCreateRequest,
   Roadmap,
+  Topic,
 } from '../types/learning';
 
 export const learningService = {
@@ -34,6 +35,11 @@ export const learningService = {
       }
       throw error;
     }
+  },
+
+  async getTopics(goalId: string) {
+    const response = await apiClient.get<Topic[]>(`/goals/${goalId}/topics`);
+    return response.data;
   },
 
   async generateRoadmap(

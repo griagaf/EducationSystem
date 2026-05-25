@@ -168,6 +168,7 @@ docker compose up --build
 - `GET http://localhost:8080/api/v1/goals/{goalId}`;
 - `PUT http://localhost:8080/api/v1/goals/{goalId}`;
 - `DELETE http://localhost:8080/api/v1/goals/{goalId}`.
+- `GET http://localhost:8080/api/v1/goals/{goalId}/topics`;
 - `POST http://localhost:8080/api/v1/goals/{goalId}/generate-roadmap`;
 - `GET http://localhost:8080/api/v1/goals/{goalId}/roadmap`;
 - `GET http://localhost:8080/api/v1/roadmaps/{roadmapId}`.
@@ -199,8 +200,8 @@ AI-service поддерживает генерацию structured roadmap чер
 Backend поддерживает генерацию и сохранение roadmap, topics и roadmap steps через AI-service.
 Backend автоматически создает tasks из roadmap и поддерживает ручное управление задачами.
 Backend поддерживает генерацию flashcards по topic, сохранение review и обновление `masteryScore`.
-Frontend поддерживает генерацию roadmap со страницы цели, отображение этапов roadmap, список задач, фильтрацию по статусу и изменение статуса задачи.
-Заметки, материалы, frontend flashcards и dashboard data будут добавляться следующими этапами.
+Frontend поддерживает генерацию roadmap со страницы цели, отображение этапов roadmap, список задач, фильтрацию по статусу, изменение статуса задачи, генерацию flashcards по теме и прохождение review.
+Заметки, материалы и dashboard data будут добавляться следующими этапами.
 
 ## 10. Переменные окружения
 

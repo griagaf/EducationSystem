@@ -8,6 +8,7 @@ import { Card } from '../components/ui/Card';
 import { Spinner } from '../components/ui/Spinner';
 import { GoalStatusBadge } from '../features/learning/GoalStatusBadge';
 import { learningGoalTypeLabels } from '../features/learning/learningLabels';
+import { FlashcardPanel } from '../features/flashcards/FlashcardPanel';
 import { TaskStatusBadge } from '../features/tasks/TaskStatusBadge';
 import { taskPriorityLabels, taskStatusLabels } from '../features/tasks/taskLabels';
 import { getApiErrorMessage } from '../services/apiClient';
@@ -28,6 +29,7 @@ export function LearningGoalDetailsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isGenerating, setIsGenerating] = useState(false);
   const [updatingTaskId, setUpdatingTaskId] = useState<string | null>(null);
+  const [selectedFlashcardTopicId, setSelectedFlashcardTopicId] = useState<string | null>(null);
 
   const loadGoalFlow = useCallback(async () => {
     if (!goalId) {
@@ -42,14 +44,16 @@ export function LearningGoalDetailsPage() {
 
     try {
       const goalData = await learningService.getGoal(goalId);
-      const [roadmapData, taskData] = await Promise.all([
+      const [roadmapData, taskData, topicData] = await Promise.all([
         learningService.getRoadmap(goalId),
         taskService.getTasks({ learningGoalId: goalId }),
+        learningService.getTopics(goalId),
       ]);
 
       setGoal(goalData);
       setRoadmap(roadmapData);
       setTasks(taskData);
+      setTopics(topicData);
     } catch (requestError) {
       setPageError(getApiErrorMessage(requestError));
     } finally {
@@ -77,6 +81,10 @@ export function LearningGoalDetailsPage() {
       return accumulator;
     }, {});
   }, [tasks]);
+
+  const selectedFlashcardTopic = selectedFlashcardTopicId
+    ? topicsById.get(selectedFlashcardTopicId) ?? null
+    : null;
 
   async function handleGenerateRoadmap() {
     if (!goalId) {
@@ -129,6 +137,14 @@ export function LearningGoalDetailsPage() {
     } finally {
       setUpdatingTaskId(null);
     }
+  }
+
+  function handleTopicMasteryScoreChange(topicId: string, masteryScore: number) {
+    setTopics((currentTopics) =>
+      currentTopics.map((topic) =>
+        topic.id === topicId ? { ...topic, masteryScore } : topic,
+      ),
+    );
   }
 
   if (isLoading) {
@@ -231,6 +247,7 @@ export function LearningGoalDetailsPage() {
 
         {roadmap ? (
           <RoadmapView
+            onOpenFlashcards={setSelectedFlashcardTopicId}
             onTaskStatusChange={handleTaskStatusChange}
             tasksByStepId={tasksByStepId}
             topicsById={topicsById}
@@ -276,6 +293,14 @@ export function LearningGoalDetailsPage() {
           </div>
         )}
       </Card>
+
+      {selectedFlashcardTopic ? (
+        <FlashcardPanel
+          onClose={() => setSelectedFlashcardTopicId(null)}
+          onMasteryScoreChange={handleTopicMasteryScoreChange}
+          topic={selectedFlashcardTopic}
+        />
+      ) : null}
     </div>
   );
 }
@@ -285,6 +310,7 @@ type RoadmapViewProps = {
   tasksByStepId: Record<string, Task[]>;
   topicsById: Map<string, Topic>;
   updatingTaskId: string | null;
+  onOpenFlashcards: (topicId: string) => void;
   onTaskStatusChange: (taskId: string, status: TaskStatus) => void;
 };
 
@@ -293,6 +319,7 @@ function RoadmapView({
   tasksByStepId,
   topicsById,
   updatingTaskId,
+  onOpenFlashcards,
   onTaskStatusChange,
 }: RoadmapViewProps) {
   const sortedSteps = [...roadmap.steps].sort((left, right) => left.orderIndex - right.orderIndex);
@@ -333,9 +360,25 @@ function RoadmapView({
 
               <div className="mt-4 flex flex-wrap gap-2">
                 {step.topicId ? (
-                  <Badge tone="neutral">
-                    {topic?.title ?? `Topic ${step.topicId.slice(0, 8)}`}
-                  </Badge>
+                  <>
+                    <Badge tone="neutral">
+                      {topic?.title ?? `Topic ${step.topicId.slice(0, 8)}`}
+                    </Badge>
+                    {topic ? (
+                      <>
+                        <Badge tone={topic.masteryScore >= 70 ? 'green' : 'slate'}>
+                          Mastery {topic.masteryScore}%
+                        </Badge>
+                        <Button
+                          className="h-8 px-3"
+                          onClick={() => onOpenFlashcards(topic.id)}
+                          variant="secondary"
+                        >
+                          Карточки
+                        </Button>
+                      </>
+                    ) : null}
+                  </>
                 ) : (
                   <Badge tone="slate">Topic не указан</Badge>
                 )}

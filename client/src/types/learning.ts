@@ -10,6 +10,8 @@ export type DifficultyLevel = 'EASY' | 'MEDIUM' | 'HARD';
 
 export type RoadmapStepStatus = 'NOT_STARTED' | 'IN_PROGRESS' | 'COMPLETED';
 
+export type FlashcardReviewResult = 'KNOW' | 'PARTIAL' | 'DONT_KNOW';
+
 export type LearningGoal = {
   id: string;
   title: string;
@@ -77,4 +79,35 @@ export type GenerateRoadmapResponse = {
   roadmap: Roadmap;
   topics: Topic[];
   createdTasks: CreatedTaskSummary[];
+};
+
+export type Flashcard = {
+  id: string;
+  learningGoalId: string;
+  topicId: string;
+  question: string;
+  answer: string;
+  difficulty: DifficultyLevel;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type GenerateFlashcardsRequest = {
+  count: number;
+};
+
+export type GenerateFlashcardsResponse = {
+  createdFlashcards: Flashcard[];
+};
+
+export type FlashcardReview = {
+  id: string;
+  flashcardId: string;
+  result: FlashcardReviewResult;
+  reviewedAt: string;
+};
+
+export type ReviewFlashcardResponse = {
+  review: FlashcardReview;
+  topicMasteryScore: number;
 };
