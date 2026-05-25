@@ -81,9 +81,10 @@ AI-service не хранит карточки и не обращается к б
 
 Backend endpoints:
 
-- `POST /api/v1/goals/{id}/flashcards/generate`;
-- `GET /api/v1/goals/{id}/flashcards`;
-- `POST /api/v1/flashcards/{id}/reviews`.
+- `POST /api/v1/topics/{id}/generate-flashcards`;
+- `GET /api/v1/topics/{id}/flashcards`;
+- `GET /api/v1/flashcards/{id}`;
+- `POST /api/v1/flashcards/{id}/review`.
 
 AI-service endpoint:
 

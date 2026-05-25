@@ -1055,9 +1055,9 @@ Response body:
 
 ## 11. Flashcards API
 
-### POST /api/v1/goals/{id}/flashcards/generate
+### POST /api/v1/topics/{id}/generate-flashcards
 
-Назначение: генерация flashcards по темам учебной цели.
+Назначение: генерация flashcards по выбранной теме.
 
 Метод: `POST`
 
@@ -1067,8 +1067,7 @@ Request body:
 
 ```json
 {
-  "topicIds": ["uuid"],
-  "cardsPerTopic": 5
+  "count": 5
 }
 ```
 
@@ -1090,15 +1089,15 @@ Response body:
 
 Возможные ошибки:
 
-- `400 Bad Request` - некорректный список topics;
+- `400 Bad Request` - некорректное количество карточек;
 - `401 Unauthorized` - JWT отсутствует или недействителен;
-- `404 Not Found` - цель или topic не найден;
+- `404 Not Found` - topic не найден или принадлежит другому пользователю;
 - `502 Bad Gateway` - AI-service вернул некорректный ответ;
 - `503 Service Unavailable` - AI-service недоступен.
 
-### GET /api/v1/goals/{id}/flashcards
+### GET /api/v1/topics/{id}/flashcards
 
-Назначение: получение flashcards учебной цели.
+Назначение: получение flashcards выбранной темы.
 
 Метод: `GET`
 
@@ -1123,10 +1122,39 @@ Response body:
 Возможные ошибки:
 
 - `401 Unauthorized` - JWT отсутствует или недействителен;
-- `404 Not Found` - учебная цель не найдена;
+- `404 Not Found` - topic не найден или принадлежит другому пользователю;
 - `500 Internal Server Error` - ошибка получения flashcards.
 
-### POST /api/v1/flashcards/{id}/reviews
+### GET /api/v1/flashcards/{id}
+
+Назначение: получение одной flashcard текущего пользователя.
+
+Метод: `GET`
+
+JWT: требуется.
+
+Request body: отсутствует.
+
+Response body:
+
+```json
+{
+  "id": "uuid",
+  "learningGoalId": "uuid",
+  "topicId": "uuid",
+  "question": "What is dependency injection?",
+  "answer": "A pattern where dependencies are provided from outside the object.",
+  "difficulty": "MEDIUM"
+}
+```
+
+Возможные ошибки:
+
+- `401 Unauthorized` - JWT отсутствует или недействителен;
+- `404 Not Found` - flashcard не найдена или принадлежит другому пользователю;
+- `500 Internal Server Error` - ошибка получения flashcard.
+
+### POST /api/v1/flashcards/{id}/review
 
 Назначение: сохранение результата прохождения карточки и обновление mastery score темы.
 

@@ -177,8 +177,12 @@ docker compose up --build
 - `PUT http://localhost:8080/api/v1/tasks/{taskId}`;
 - `DELETE http://localhost:8080/api/v1/tasks/{taskId}`;
 - `PATCH http://localhost:8080/api/v1/tasks/{taskId}/status`.
+- `POST http://localhost:8080/api/v1/topics/{topicId}/generate-flashcards`;
+- `GET http://localhost:8080/api/v1/topics/{topicId}/flashcards`;
+- `GET http://localhost:8080/api/v1/flashcards/{flashcardId}`;
+- `POST http://localhost:8080/api/v1/flashcards/{flashcardId}/review`.
 
-`GET /api/v1/auth/me`, Learning Goals endpoints, Roadmap endpoints и Tasks endpoints требуют заголовок `Authorization: Bearer <accessToken>`.
+`GET /api/v1/auth/me`, Learning Goals endpoints, Roadmap endpoints, Tasks endpoints и Flashcards endpoints требуют заголовок `Authorization: Bearer <accessToken>`.
 
 Доступные frontend routes текущего этапа:
 
@@ -194,8 +198,9 @@ Frontend поддерживает создание и просмотр учеб�
 AI-service поддерживает генерацию structured roadmap через внутренний endpoint.
 Backend поддерживает генерацию и сохранение roadmap, topics и roadmap steps через AI-service.
 Backend автоматически создает tasks из roadmap и поддерживает ручное управление задачами.
+Backend поддерживает генерацию flashcards по topic, сохранение review и обновление `masteryScore`.
 Frontend поддерживает генерацию roadmap со страницы цели, отображение этапов roadmap, список задач, фильтрацию по статусу и изменение статуса задачи.
-Заметки, flashcards, материалы и dashboard data будут добавляться следующими этапами.
+Заметки, материалы, frontend flashcards и dashboard data будут добавляться следующими этапами.
 
 ## 10. Переменные окружения
 

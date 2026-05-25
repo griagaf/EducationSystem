@@ -16,8 +16,8 @@ import java.time.Instant;
 import java.util.UUID;
 
 @Entity
-@Table(name = "topics")
-public class Topic {
+@Table(name = "flashcards")
+public class Flashcard {
 
     @Id
     private UUID id;
@@ -30,18 +30,19 @@ public class Topic {
     @JoinColumn(name = "learning_goal_id", nullable = false)
     private LearningGoal learningGoal;
 
-    @Column(nullable = false, length = 255)
-    private String title;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "topic_id", nullable = false)
+    private Topic topic;
 
-    @Column(columnDefinition = "text")
-    private String description;
+    @Column(nullable = false, columnDefinition = "text")
+    private String question;
 
-    @Column(name = "mastery_score", nullable = false)
-    private int masteryScore;
+    @Column(nullable = false, columnDefinition = "text")
+    private String answer;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "difficulty_level", nullable = false, length = 50)
-    private DifficultyLevel difficultyLevel;
+    @Column(nullable = false, length = 50)
+    private DifficultyLevel difficulty;
 
     @Column(name = "created_at", nullable = false)
     private Instant createdAt;
@@ -49,16 +50,23 @@ public class Topic {
     @Column(name = "updated_at", nullable = false)
     private Instant updatedAt;
 
-    protected Topic() {
+    protected Flashcard() {
     }
 
-    public Topic(User user, LearningGoal learningGoal, String title, String description, DifficultyLevel difficultyLevel) {
+    public Flashcard(
+            User user,
+            LearningGoal learningGoal,
+            Topic topic,
+            String question,
+            String answer,
+            DifficultyLevel difficulty
+    ) {
         this.user = user;
         this.learningGoal = learningGoal;
-        this.title = title;
-        this.description = description;
-        this.difficultyLevel = difficultyLevel;
-        this.masteryScore = 0;
+        this.topic = topic;
+        this.question = question;
+        this.answer = answer;
+        this.difficulty = difficulty;
     }
 
     @PrePersist
@@ -69,8 +77,8 @@ public class Topic {
         Instant now = Instant.now();
         createdAt = now;
         updatedAt = now;
-        if (difficultyLevel == null) {
-            difficultyLevel = DifficultyLevel.MEDIUM;
+        if (difficulty == null) {
+            difficulty = DifficultyLevel.MEDIUM;
         }
     }
 
@@ -91,27 +99,20 @@ public class Topic {
         return learningGoal;
     }
 
-    public String getTitle() {
-        return title;
+    public Topic getTopic() {
+        return topic;
     }
 
-    public String getDescription() {
-        return description;
+    public String getQuestion() {
+        return question;
     }
 
-    public int getMasteryScore() {
-        return masteryScore;
+    public String getAnswer() {
+        return answer;
     }
 
-    public DifficultyLevel getDifficultyLevel() {
-        return difficultyLevel;
-    }
-
-    public void updateMasteryScore(int masteryScore) {
-        if (masteryScore < 0 || masteryScore > 100) {
-            throw new IllegalArgumentException("Mastery score must be between 0 and 100");
-        }
-        this.masteryScore = masteryScore;
+    public DifficultyLevel getDifficulty() {
+        return difficulty;
     }
 
     public Instant getCreatedAt() {
