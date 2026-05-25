@@ -1251,24 +1251,12 @@ Response body:
 
 ```json
 {
-  "activeGoalsCount": 2,
-  "completedGoalsCount": 1,
-  "archivedGoalsCount": 0,
-  "notesCount": 12,
-  "totalTasksCount": 24,
-  "completedTasksCount": 10,
-  "overallProgressPercent": 41,
+  "totalGoals": 3,
+  "activeGoals": 2,
+  "totalTasks": 24,
+  "completedTasks": 10,
+  "taskCompletionPercent": 41,
   "averageMasteryScore": 38,
-  "goals": [
-    {
-      "id": "uuid",
-      "title": "Изучить Java Spring Boot",
-      "type": "TECHNOLOGY_LEARNING",
-      "status": "ACTIVE",
-      "progressPercent": 42,
-      "averageMasteryScore": 40
-    }
-  ],
   "weakTopics": [
     {
       "id": "uuid",
@@ -1278,10 +1266,21 @@ Response body:
       "difficultyLevel": "HARD"
     }
   ],
+  "recentGoals": [
+    {
+      "id": "uuid",
+      "title": "Изучить Java Spring Boot",
+      "type": "TECHNOLOGY_LEARNING",
+      "status": "ACTIVE",
+      "progressPercent": 42,
+      "createdAt": "2026-05-15T10:00:00Z"
+    }
+  ],
   "upcomingTasks": [
     {
       "id": "uuid",
       "learningGoalId": "uuid",
+      "learningGoalTitle": "Изучить Java Spring Boot",
       "title": "Сделать REST API practice task",
       "status": "TODO",
       "priority": "HIGH",

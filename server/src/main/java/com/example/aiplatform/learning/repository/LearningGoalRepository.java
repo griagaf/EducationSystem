@@ -13,4 +13,8 @@ public interface LearningGoalRepository extends JpaRepository<LearningGoal, UUID
     Optional<LearningGoal> findByIdAndUserId(UUID id, UUID userId);
 
     boolean existsByIdAndUserId(UUID id, UUID userId);
+
+    long countByUserId(UUID userId);
+
+    long countByUserIdAndStatus(UUID userId, com.example.aiplatform.learning.entity.LearningGoalStatus status);
 }
