@@ -50,7 +50,7 @@ Review result:
 
 1. Пользователь выбирает цель или topics.
 2. Backend проверяет принадлежность данных пользователю.
-3. Backend отправляет topics в AI-service.
+3. Backend отправляет выбранную тему в AI-service. Для нескольких topics backend выполняет отдельный вызов по каждой теме.
 4. AI-service вызывает `POST /api/ai/generate-flashcards`.
 5. AI-service возвращает structured JSON.
 6. Backend валидирует ответ.
@@ -88,6 +88,32 @@ Backend endpoints:
 AI-service endpoint:
 
 - `POST /api/ai/generate-flashcards`.
+
+Request AI-service:
+
+```json
+{
+  "goal_title": "Изучить Java Spring Boot",
+  "topic_title": "Spring IoC",
+  "topic_description": "Dependency injection basics",
+  "difficulty_level": "MEDIUM",
+  "count": 5
+}
+```
+
+Response AI-service:
+
+```json
+{
+  "flashcards": [
+    {
+      "question": "What is dependency injection?",
+      "answer": "A pattern where dependencies are provided from outside the object.",
+      "difficulty": "MEDIUM"
+    }
+  ]
+}
+```
 
 ## 7. Ограничения
 

@@ -1349,20 +1349,17 @@ Response body:
 
 ### POST /api/ai/generate-flashcards
 
-Назначение: генерация flashcards по темам и материалам.
+Назначение: генерация flashcards по одной теме. Backend вызывает endpoint отдельно для выбранной темы и сохраняет полученные карточки в своей базе данных.
 
 Request body:
 
 ```json
 {
-  "topics": [
-    {
-      "id": "uuid",
-      "title": "Spring IoC",
-      "description": "Dependency injection basics"
-    }
-  ],
-  "cards_per_topic": 5
+  "goal_title": "Изучить Java Spring Boot",
+  "topic_title": "Spring IoC",
+  "topic_description": "Dependency injection basics",
+  "difficulty_level": "MEDIUM",
+  "count": 5
 }
 ```
 
@@ -1372,7 +1369,6 @@ Response body:
 {
   "flashcards": [
     {
-      "topic_id": "uuid",
       "question": "What is dependency injection?",
       "answer": "A pattern where dependencies are provided from outside the object.",
       "difficulty": "MEDIUM"
