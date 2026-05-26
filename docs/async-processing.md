@@ -12,7 +12,7 @@ Frontend отправляет запрос в backend:
 
 - `POST /api/v1/goals/{id}/generate-roadmap`;
 - `POST /api/v1/materials/{id}/extract-topics`;
-- `POST /api/v1/goals/{id}/flashcards/generate`.
+- `POST /api/v1/topics/{id}/generate-flashcards`.
 
 Backend:
 

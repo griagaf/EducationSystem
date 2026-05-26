@@ -115,6 +115,13 @@ public class LearningGoal {
         this.status = LearningGoalStatus.ARCHIVED;
     }
 
+    public void updateProgressPercent(int progressPercent) {
+        if (progressPercent < 0 || progressPercent > 100) {
+            throw new IllegalArgumentException("Progress percent must be between 0 and 100");
+        }
+        this.progressPercent = progressPercent;
+    }
+
     public UUID getId() {
         return id;
     }

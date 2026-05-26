@@ -9,6 +9,7 @@ import { LearningGoalsPage } from '../pages/LearningGoalsPage';
 import { LoginPage } from '../pages/LoginPage';
 import { PlaceholderPage } from '../pages/PlaceholderPage';
 import { RegisterPage } from '../pages/RegisterPage';
+import { TasksPage } from '../pages/TasksPage';
 
 export function AppRoutes() {
   return (
@@ -25,7 +26,7 @@ export function AppRoutes() {
           <Route element={<LearningGoalsPage />} path="/goals" />
           <Route element={<LearningGoalDetailsPage />} path="/goals/:goalId" />
           <Route element={<PlaceholderPage title="Notes" />} path="/notes" />
-          <Route element={<PlaceholderPage title="Tasks" />} path="/tasks" />
+          <Route element={<TasksPage />} path="/tasks" />
         </Route>
       </Route>
 

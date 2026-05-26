@@ -18,7 +18,7 @@ sequenceDiagram
     B->>A: POST /api/ai/generate-roadmap
     A-->>B: Roadmap JSON
     B->>DB: Сохранение roadmap и tasks
-    F->>B: POST /api/v1/goals/{id}/flashcards/generate
+    F->>B: POST /api/v1/topics/{id}/generate-flashcards
     B->>A: POST /api/ai/generate-flashcards
     A-->>B: Flashcards JSON
     B->>DB: Сохранение Flashcards

@@ -87,7 +87,7 @@ export function LearningGoalsPage() {
         <Card className="sticky top-6">
           <h3 className="text-lg font-semibold text-slate-950">Новая цель</h3>
           <p className="mt-2 text-sm leading-6 text-slate-600">
-            Roadmap и задачи будут подключены на следующих этапах.
+            После создания откройте цель, чтобы сгенерировать roadmap и задачи.
           </p>
           <div className="mt-5">
             <GoalForm onCreated={handleCreated} />
