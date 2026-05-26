@@ -29,7 +29,26 @@ public interface TaskRepository extends JpaRepository<Task, UUID> {
 
     Optional<Task> findByIdAndUserId(UUID id, UUID userId);
 
+    long countByUserId(UUID userId);
+
+    long countByUserIdAndStatus(UUID userId, TaskStatus status);
+
     long countByLearningGoalId(UUID learningGoalId);
 
     long countByLearningGoalIdAndStatus(UUID learningGoalId, TaskStatus status);
+
+    @Query("""
+            select t from Task t
+                join fetch t.learningGoal
+            where t.user.id = :userId
+              and t.status in :statuses
+            order by
+              case when t.dueDate is null then 1 else 0 end,
+              t.dueDate asc,
+              t.createdAt desc
+            """)
+    List<Task> findUpcomingForUser(
+            @Param("userId") UUID userId,
+            @Param("statuses") List<TaskStatus> statuses
+    );
 }
