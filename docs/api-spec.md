@@ -537,7 +537,7 @@ Response body:
 
 ### POST /api/v1/goals/{id}/materials
 
-Назначение: загрузка PDF, DOCX или TXT материала для учебной цели.
+Назначение: загрузка TXT-материала для учебной цели.
 
 Метод: `POST`
 
@@ -555,10 +555,11 @@ Response body:
 {
   "id": "uuid",
   "learningGoalId": "uuid",
-  "fileName": "spring-notes.pdf",
-  "contentType": "application/pdf",
-  "fileSize": 524288,
-  "processingStatus": "UPLOADED",
+  "fileName": "spring-notes.txt",
+  "contentType": "text/plain",
+  "fileSize": 4096,
+  "processingStatus": "TEXT_EXTRACTED",
+  "extractedText": "Extracted text from TXT material",
   "createdAt": "2026-05-15T10:00:00Z"
 }
 ```
@@ -586,10 +587,12 @@ Response body:
 [
   {
     "id": "uuid",
-    "fileName": "spring-notes.pdf",
-    "contentType": "application/pdf",
-    "fileSize": 524288,
-    "processingStatus": "TOPICS_EXTRACTED",
+    "learningGoalId": "uuid",
+    "fileName": "spring-notes.txt",
+    "contentType": "text/plain",
+    "fileSize": 4096,
+    "processingStatus": "TEXT_EXTRACTED",
+    "extractedText": "Extracted text from TXT material",
     "createdAt": "2026-05-15T10:00:00Z"
   }
 ]
@@ -601,9 +604,42 @@ Response body:
 - `404 Not Found` - учебная цель не найдена;
 - `500 Internal Server Error` - ошибка получения материалов.
 
+### GET /api/v1/materials/{id}
+
+Назначение: получение одного материала текущего пользователя.
+
+Метод: `GET`
+
+JWT: требуется.
+
+Request body: отсутствует.
+
+Response body:
+
+```json
+{
+  "id": "uuid",
+  "learningGoalId": "uuid",
+  "fileName": "spring-notes.txt",
+  "contentType": "text/plain",
+  "fileSize": 4096,
+  "processingStatus": "TEXT_EXTRACTED",
+  "extractedText": "Extracted text from TXT material",
+  "createdAt": "2026-05-15T10:00:00Z"
+}
+```
+
+Возможные ошибки:
+
+- `401 Unauthorized` - JWT отсутствует или недействителен;
+- `404 Not Found` - материал не найден или принадлежит другому пользователю;
+- `500 Internal Server Error` - ошибка получения материала.
+
 ### POST /api/v1/materials/{id}/extract-topics
 
 Назначение: извлечение тем из материала через AI-service.
+
+Статус: запланировано для следующих версий. В текущем backend-этапе реализованы загрузка TXT, сохранение metadata и чтение материалов.
 
 Метод: `POST`
 
@@ -1055,9 +1091,9 @@ Response body:
 
 ## 11. Flashcards API
 
-### POST /api/v1/goals/{id}/flashcards/generate
+### POST /api/v1/topics/{id}/generate-flashcards
 
-Назначение: генерация flashcards по темам учебной цели.
+Назначение: генерация flashcards по выбранной теме.
 
 Метод: `POST`
 
@@ -1067,8 +1103,7 @@ Request body:
 
 ```json
 {
-  "topicIds": ["uuid"],
-  "cardsPerTopic": 5
+  "count": 5
 }
 ```
 
@@ -1090,15 +1125,15 @@ Response body:
 
 Возможные ошибки:
 
-- `400 Bad Request` - некорректный список topics;
+- `400 Bad Request` - некорректное количество карточек;
 - `401 Unauthorized` - JWT отсутствует или недействителен;
-- `404 Not Found` - цель или topic не найден;
+- `404 Not Found` - topic не найден или принадлежит другому пользователю;
 - `502 Bad Gateway` - AI-service вернул некорректный ответ;
 - `503 Service Unavailable` - AI-service недоступен.
 
-### GET /api/v1/goals/{id}/flashcards
+### GET /api/v1/topics/{id}/flashcards
 
-Назначение: получение flashcards учебной цели.
+Назначение: получение flashcards выбранной темы.
 
 Метод: `GET`
 
@@ -1123,10 +1158,39 @@ Response body:
 Возможные ошибки:
 
 - `401 Unauthorized` - JWT отсутствует или недействителен;
-- `404 Not Found` - учебная цель не найдена;
+- `404 Not Found` - topic не найден или принадлежит другому пользователю;
 - `500 Internal Server Error` - ошибка получения flashcards.
 
-### POST /api/v1/flashcards/{id}/reviews
+### GET /api/v1/flashcards/{id}
+
+Назначение: получение одной flashcard текущего пользователя.
+
+Метод: `GET`
+
+JWT: требуется.
+
+Request body: отсутствует.
+
+Response body:
+
+```json
+{
+  "id": "uuid",
+  "learningGoalId": "uuid",
+  "topicId": "uuid",
+  "question": "What is dependency injection?",
+  "answer": "A pattern where dependencies are provided from outside the object.",
+  "difficulty": "MEDIUM"
+}
+```
+
+Возможные ошибки:
+
+- `401 Unauthorized` - JWT отсутствует или недействителен;
+- `404 Not Found` - flashcard не найдена или принадлежит другому пользователю;
+- `500 Internal Server Error` - ошибка получения flashcard.
+
+### POST /api/v1/flashcards/{id}/review
 
 Назначение: сохранение результата прохождения карточки и обновление mastery score темы.
 
@@ -1223,24 +1287,12 @@ Response body:
 
 ```json
 {
-  "activeGoalsCount": 2,
-  "completedGoalsCount": 1,
-  "archivedGoalsCount": 0,
-  "notesCount": 12,
-  "totalTasksCount": 24,
-  "completedTasksCount": 10,
-  "overallProgressPercent": 41,
+  "totalGoals": 3,
+  "activeGoals": 2,
+  "totalTasks": 24,
+  "completedTasks": 10,
+  "taskCompletionPercent": 41,
   "averageMasteryScore": 38,
-  "goals": [
-    {
-      "id": "uuid",
-      "title": "Изучить Java Spring Boot",
-      "type": "TECHNOLOGY_LEARNING",
-      "status": "ACTIVE",
-      "progressPercent": 42,
-      "averageMasteryScore": 40
-    }
-  ],
   "weakTopics": [
     {
       "id": "uuid",
@@ -1250,10 +1302,21 @@ Response body:
       "difficultyLevel": "HARD"
     }
   ],
+  "recentGoals": [
+    {
+      "id": "uuid",
+      "title": "Изучить Java Spring Boot",
+      "type": "TECHNOLOGY_LEARNING",
+      "status": "ACTIVE",
+      "progressPercent": 42,
+      "createdAt": "2026-05-15T10:00:00Z"
+    }
+  ],
   "upcomingTasks": [
     {
       "id": "uuid",
       "learningGoalId": "uuid",
+      "learningGoalTitle": "Изучить Java Spring Boot",
       "title": "Сделать REST API practice task",
       "status": "TODO",
       "priority": "HIGH",
@@ -1349,20 +1412,17 @@ Response body:
 
 ### POST /api/ai/generate-flashcards
 
-Назначение: генерация flashcards по темам и материалам.
+Назначение: генерация flashcards по одной теме. Backend вызывает endpoint отдельно для выбранной темы и сохраняет полученные карточки в своей базе данных.
 
 Request body:
 
 ```json
 {
-  "topics": [
-    {
-      "id": "uuid",
-      "title": "Spring IoC",
-      "description": "Dependency injection basics"
-    }
-  ],
-  "cards_per_topic": 5
+  "goal_title": "Изучить Java Spring Boot",
+  "topic_title": "Spring IoC",
+  "topic_description": "Dependency injection basics",
+  "difficulty_level": "MEDIUM",
+  "count": 5
 }
 ```
 
@@ -1372,7 +1432,6 @@ Response body:
 {
   "flashcards": [
     {
-      "topic_id": "uuid",
       "question": "What is dependency injection?",
       "answer": "A pattern where dependencies are provided from outside the object.",
       "difficulty": "MEDIUM"

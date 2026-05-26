@@ -184,7 +184,7 @@ Endpoint извлекает topics из текста учебного матер
 
 ### POST /api/ai/generate-flashcards
 
-Endpoint генерирует flashcards по topics.
+Endpoint генерирует flashcards по выбранной теме. Для нескольких topics backend вызывает endpoint отдельно по каждой теме.
 
 Потребитель endpoint: Spring Boot backend.
 
@@ -294,11 +294,22 @@ Spring Boot backend сохраняет roadmap, steps и tasks в свою ба�
 
 Пример ответа `POST /api/ai/generate-flashcards`:
 
+Request содержит одну тему. Если backend должен сгенерировать карточки для нескольких topics, он вызывает endpoint отдельно для каждой темы.
+
+```json
+{
+  "goal_title": "Изучить Java Spring Boot",
+  "topic_title": "Spring IoC",
+  "topic_description": "Dependency injection basics",
+  "difficulty_level": "MEDIUM",
+  "count": 5
+}
+```
+
 ```json
 {
   "flashcards": [
     {
-      "topic_id": "uuid",
       "question": "What is dependency injection?",
       "answer": "A pattern where dependencies are provided from outside the object.",
       "difficulty": "MEDIUM"

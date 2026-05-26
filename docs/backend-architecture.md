@@ -531,9 +531,10 @@ Response DTO:
 - `POST /api/v1/goals/{goalId}/generate-roadmap` - сгенерировать roadmap;
 - `GET /api/v1/goals/{goalId}/roadmap` - получить roadmap цели;
 - `GET /api/v1/roadmaps/{roadmapId}` - получить roadmap по id;
-- `POST /api/v1/goals/{goalId}/flashcards/generate` - сгенерировать flashcards;
-- `GET /api/v1/goals/{goalId}/flashcards` - получить flashcards цели;
-- `POST /api/v1/flashcards/{flashcardId}/reviews` - сохранить результат прохождения карточки;
+- `POST /api/v1/topics/{topicId}/generate-flashcards` - сгенерировать flashcards по теме;
+- `GET /api/v1/topics/{topicId}/flashcards` - получить flashcards темы;
+- `GET /api/v1/flashcards/{flashcardId}` - получить flashcard;
+- `POST /api/v1/flashcards/{flashcardId}/review` - сохранить результат прохождения карточки;
 - `GET /api/v1/goals/{goalId}/knowledge-graph` - получить knowledge graph цели.
 
 ## 9. Модуль tasks
@@ -872,9 +873,10 @@ Learning:
 
 Flashcards:
 
-- `POST /api/v1/goals/{goalId}/flashcards/generate`;
-- `GET /api/v1/goals/{goalId}/flashcards`;
-- `POST /api/v1/flashcards/{flashcardId}/reviews`.
+- `POST /api/v1/topics/{topicId}/generate-flashcards`;
+- `GET /api/v1/topics/{topicId}/flashcards`;
+- `GET /api/v1/flashcards/{flashcardId}`;
+- `POST /api/v1/flashcards/{flashcardId}/review`.
 
 Knowledge Graph:
 
