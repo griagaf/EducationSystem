@@ -2,6 +2,7 @@
 .gradle/
 build/
 out/
+server/bin/
 *.class
 
 # Node
@@ -29,4 +30,3 @@ venv/
 # OS
 .DS_Store
 Thumbs.db
-

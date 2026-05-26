@@ -1,0 +1,80 @@
+import { apiClient } from './apiClient';
+import axios from 'axios';
+import type {
+  GenerateRoadmapRequest,
+  GenerateRoadmapResponse,
+  LearningGoal,
+  LearningGoalCreateRequest,
+  Roadmap,
+  StudyMaterial,
+  Topic,
+} from '../types/learning';
+
+export const learningService = {
+  async getGoals() {
+    const response = await apiClient.get<LearningGoal[]>('/goals');
+    return response.data;
+  },
+
+  async createGoal(request: LearningGoalCreateRequest) {
+    const response = await apiClient.post<LearningGoal>('/goals', request);
+    return response.data;
+  },
+
+  async getGoal(goalId: string) {
+    const response = await apiClient.get<LearningGoal>(`/goals/${goalId}`);
+    return response.data;
+  },
+
+  async getRoadmap(goalId: string) {
+    try {
+      const response = await apiClient.get<Roadmap>(`/goals/${goalId}/roadmap`);
+      return response.data;
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response?.status === 404) {
+        return null;
+      }
+      throw error;
+    }
+  },
+
+  async getTopics(goalId: string) {
+    const response = await apiClient.get<Topic[]>(`/goals/${goalId}/topics`);
+    return response.data;
+  },
+
+  async getMaterials(goalId: string) {
+    const response = await apiClient.get<StudyMaterial[]>(`/goals/${goalId}/materials`);
+    return response.data;
+  },
+
+  async uploadMaterial(goalId: string, file: File) {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const response = await apiClient.post<StudyMaterial>(
+      `/goals/${goalId}/materials`,
+      formData,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      },
+    );
+    return response.data;
+  },
+
+  async generateRoadmap(
+    goalId: string,
+    request: GenerateRoadmapRequest = {
+      userLevel: 'beginner',
+      includeMaterials: false,
+    },
+  ) {
+    const response = await apiClient.post<GenerateRoadmapResponse>(
+      `/goals/${goalId}/generate-roadmap`,
+      request,
+    );
+    return response.data;
+  },
+};
