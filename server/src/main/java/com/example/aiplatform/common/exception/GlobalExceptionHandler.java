@@ -60,6 +60,11 @@ public class GlobalExceptionHandler {
         return error(HttpStatus.CONFLICT, "ROADMAP_ALREADY_EXISTS", exception.getMessage(), Map.of());
     }
 
+    @ExceptionHandler(BadRequestException.class)
+    ResponseEntity<ApiErrorResponse> handleBadRequest(BadRequestException exception) {
+        return error(HttpStatus.BAD_REQUEST, "BAD_REQUEST", exception.getMessage(), Map.of());
+    }
+
     @ExceptionHandler(InvalidAiResponseException.class)
     ResponseEntity<ApiErrorResponse> handleInvalidAiResponse(InvalidAiResponseException exception) {
         return error(HttpStatus.BAD_GATEWAY, "INVALID_AI_RESPONSE", exception.getMessage(), Map.of());

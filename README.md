@@ -26,7 +26,7 @@ AI Personal Learning Platform - веб-платформа для персона�
 - JWT-аутентификация;
 - личные заметки;
 - учебные цели типов `SELF_STUDY`, `EXAM_PREPARATION`, `INTERVIEW_PREPARATION`, `TECHNOLOGY_LEARNING`;
-- загрузка PDF, DOCX и TXT материалов;
+- загрузка TXT материалов;
 - извлечение текста из материалов в упрощенном виде;
 - выделение topics через AI-service;
 - AI-генерация roadmap;
@@ -41,8 +41,8 @@ AI Personal Learning Platform - веб-платформа для персона�
 
 1. Пользователь регистрируется или входит в систему.
 2. Пользователь создает `LearningGoal`.
-3. Пользователь добавляет описание цели или загружает учебные материалы.
-4. Backend извлекает текст и вызывает AI-service для выделения topics.
+3. Пользователь добавляет описание цели или загружает TXT-материалы.
+4. Backend извлекает текст и сохраняет metadata материала.
 5. Backend создает roadmap и roadmap steps.
 6. Backend создает tasks и связывает их с steps и topics.
 7. Пользователь выполняет задачи и проходит flashcards.
@@ -183,8 +183,11 @@ docker compose up --build
 - `GET http://localhost:8080/api/v1/flashcards/{flashcardId}`;
 - `POST http://localhost:8080/api/v1/flashcards/{flashcardId}/review`.
 - `GET http://localhost:8080/api/v1/dashboard/summary`.
+- `POST http://localhost:8080/api/v1/goals/{goalId}/materials`;
+- `GET http://localhost:8080/api/v1/goals/{goalId}/materials`;
+- `GET http://localhost:8080/api/v1/materials/{materialId}`.
 
-`GET /api/v1/auth/me`, Learning Goals endpoints, Roadmap endpoints, Tasks endpoints, Flashcards endpoints и Dashboard endpoint требуют заголовок `Authorization: Bearer <accessToken>`.
+`GET /api/v1/auth/me`, Learning Goals endpoints, Roadmap endpoints, Tasks endpoints, Flashcards endpoints, Materials endpoints и Dashboard endpoint требуют заголовок `Authorization: Bearer <accessToken>`.
 
 Доступные frontend routes текущего этапа:
 
@@ -201,14 +204,15 @@ AI-service поддерживает генерацию structured roadmap чер
 Backend поддерживает генерацию и сохранение roadmap, topics и roadmap steps через AI-service.
 Backend автоматически создает tasks из roadmap и поддерживает ручное управление задачами.
 Backend поддерживает генерацию flashcards по topic, сохранение review и обновление `masteryScore`.
-Frontend поддерживает генерацию roadmap со страницы цели, отображение этапов roadmap, список задач, фильтрацию по статусу, изменение статуса задачи, генерацию flashcards по теме, прохождение review и dashboard со сводкой прогресса.
-Заметки и материалы будут добавляться следующими этапами.
+Backend поддерживает загрузку TXT-материалов, локальное хранение файла и сохранение metadata в PostgreSQL.
+Frontend поддерживает генерацию roadmap со страницы цели, отображение этапов roadmap, список задач, фильтрацию по статусу, изменение статуса задачи, генерацию flashcards по теме, прохождение review, dashboard со сводкой прогресса и загрузку материалов на странице цели.
+Заметки будут добавляться следующими этапами.
 
 ## 10. Переменные окружения
 
 Минимальные группы настроек:
 
-- backend: `JWT_SECRET`, `JWT_ACCESS_TOKEN_TTL`, параметры подключения к PostgreSQL, URL AI-service;
+- backend: `JWT_SECRET`, `JWT_ACCESS_TOKEN_TTL`, параметры подключения к PostgreSQL, URL AI-service, `FILE_STORAGE_UPLOAD_DIR`;
 - PostgreSQL: database name, user, password;
 - AI-service: API key AI-провайдера, model name, timeout;
 - frontend: базовый URL backend API.
