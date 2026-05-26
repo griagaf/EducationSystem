@@ -107,6 +107,13 @@ public class Topic {
         return difficultyLevel;
     }
 
+    public void updateMasteryScore(int masteryScore) {
+        if (masteryScore < 0 || masteryScore > 100) {
+            throw new IllegalArgumentException("Mastery score must be between 0 and 100");
+        }
+        this.masteryScore = masteryScore;
+    }
+
     public Instant getCreatedAt() {
         return createdAt;
     }

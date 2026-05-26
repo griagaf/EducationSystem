@@ -408,7 +408,8 @@ learning_goals 1:N tasks
 - `file_size` - not null, больше 0;
 - `storage_key` - not null;
 - `processing_status` должен быть одним из `UPLOADED`, `TEXT_EXTRACTED`, `TOPICS_EXTRACTED`, `FAILED`;
-- поддерживаемые форматы первой версии: PDF, DOCX, TXT;
+- поддерживаемый формат текущей реализации: TXT;
+- PDF и DOCX запланированы для следующих версий;
 - OCR и изображения не поддерживаются.
 
 ### Индексы
@@ -421,9 +422,9 @@ learning_goals 1:N tasks
 ### Жизненный цикл файла
 
 1. Backend сохраняет файл в локальное хранилище.
-2. Backend создает запись `study_materials` со статусом `UPLOADED`.
-3. После успешного извлечения текста backend обновляет `extracted_text` и статус `TEXT_EXTRACTED`.
-4. После выделения topics backend обновляет статус `TOPICS_EXTRACTED`.
+2. Backend сохраняет запись `study_materials`.
+3. После успешного извлечения текста backend сохраняет `extracted_text` и статус `TEXT_EXTRACTED`.
+4. После выделения topics в следующих версиях backend сможет обновлять статус `TOPICS_EXTRACTED`.
 5. При ошибке обработки backend сохраняет статус `FAILED` и пишет техническую причину в логи.
 
 ### Очистка файлов
