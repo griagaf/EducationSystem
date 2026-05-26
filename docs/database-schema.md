@@ -73,7 +73,7 @@ Unique constraints используются для:
 - `users.email`;
 - `user_profiles.user_id`;
 - `roadmaps.learning_goal_id`;
-- `roadmap_steps(roadmap_id, step_number)`.
+- `roadmap_steps(roadmap_id, order_index)`.
 
 ## 2. Список таблиц
 
@@ -408,7 +408,8 @@ learning_goals 1:N tasks
 - `file_size` - not null, больше 0;
 - `storage_key` - not null;
 - `processing_status` должен быть одним из `UPLOADED`, `TEXT_EXTRACTED`, `TOPICS_EXTRACTED`, `FAILED`;
-- поддерживаемые форматы первой версии: PDF, DOCX, TXT;
+- поддерживаемый формат текущей реализации: TXT;
+- PDF и DOCX запланированы для следующих версий;
 - OCR и изображения не поддерживаются.
 
 ### Индексы
@@ -421,9 +422,9 @@ learning_goals 1:N tasks
 ### Жизненный цикл файла
 
 1. Backend сохраняет файл в локальное хранилище.
-2. Backend создает запись `study_materials` со статусом `UPLOADED`.
-3. После успешного извлечения текста backend обновляет `extracted_text` и статус `TEXT_EXTRACTED`.
-4. После выделения topics backend обновляет статус `TOPICS_EXTRACTED`.
+2. Backend сохраняет запись `study_materials`.
+3. После успешного извлечения текста backend сохраняет `extracted_text` и статус `TEXT_EXTRACTED`.
+4. После выделения topics в следующих версиях backend сможет обновлять статус `TOPICS_EXTRACTED`.
 5. При ошибке обработки backend сохраняет статус `FAILED` и пишет техническую причину в логи.
 
 ### Очистка файлов
@@ -493,8 +494,6 @@ learning_goals 1:N tasks
 | `learning_goal_id` | `uuid` | да | Учебная цель |
 | `title` | `varchar(255)` | да | Название roadmap |
 | `description` | `text` | да | Краткое описание roadmap |
-| `source_prompt` | `text` | нет | Prompt или краткое описание входа для AI |
-| `ai_model` | `varchar(100)` | нет | Использованная AI-модель |
 | `created_at` | `timestamp with time zone` | да | Дата создания |
 | `updated_at` | `timestamp with time zone` | да | Дата обновления |
 
@@ -532,11 +531,11 @@ learning_goals 1:N tasks
 | `id` | `uuid` | да | Primary key |
 | `roadmap_id` | `uuid` | да | Roadmap |
 | `topic_id` | `uuid` | нет | Связанная тема |
-| `step_number` | `integer` | да | Порядковый номер этапа |
+| `order_index` | `integer` | да | Порядковый номер этапа |
 | `title` | `varchar(255)` | да | Название этапа |
 | `description` | `text` | да | Описание этапа |
 | `status` | `varchar(50)` | да | Статус этапа |
-| `duration_weeks` | `integer` | нет | Длительность этапа в неделях |
+| `estimated_days` | `integer` | да | Оценка длительности этапа в днях |
 | `created_at` | `timestamp with time zone` | да | Дата создания |
 | `updated_at` | `timestamp with time zone` | да | Дата обновления |
 
@@ -552,22 +551,22 @@ learning_goals 1:N tasks
 - `id` - primary key;
 - `roadmap_id` - foreign key, not null;
 - `topic_id` - foreign key, nullable;
-- `step_number` - not null;
-- `step_number` должен быть больше 0;
+- `order_index` - not null;
+- `order_index` должен быть больше 0;
 - `title` - not null;
 - `description` - not null;
 - `status` - not null;
 - `status` должен быть одним из `NOT_STARTED`, `IN_PROGRESS`, `COMPLETED`;
-- `duration_weeks` должен быть null или больше 0;
+- `estimated_days` должен быть больше 0;
 - `created_at` - not null;
 - `updated_at` - not null;
-- `(roadmap_id, step_number)` - unique.
+- `(roadmap_id, order_index)` - unique.
 
 ### Индексы
 
 - index по `roadmap_id`;
 - index по `topic_id`;
-- unique index по `roadmap_id, step_number`;
+- unique index по `roadmap_id, order_index`;
 - index по `roadmap_id, status`.
 
 ## 13. Таблица tasks
@@ -590,8 +589,6 @@ learning_goals 1:N tasks
 | `status` | `varchar(50)` | да | Статус задачи |
 | `priority` | `varchar(50)` | да | Приоритет задачи |
 | `due_date` | `date` | нет | Дедлайн |
-| `completed_at` | `timestamp with time zone` | нет | Дата выполнения |
-| `order_index` | `integer` | нет | Порядок отображения |
 | `created_at` | `timestamp with time zone` | да | Дата создания |
 | `updated_at` | `timestamp with time zone` | да | Дата обновления |
 
@@ -618,7 +615,6 @@ learning_goals 1:N tasks
 - `status` должен быть одним из `TODO`, `IN_PROGRESS`, `DONE`, `CANCELLED`;
 - `priority` - not null;
 - `priority` должен быть одним из `LOW`, `MEDIUM`, `HIGH`;
-- `order_index` должен быть null или больше 0;
 - `created_at` - not null;
 - `updated_at` - not null;
 
@@ -631,8 +627,7 @@ learning_goals 1:N tasks
 - index по `user_id, status`;
 - index по `learning_goal_id, status`;
 - index по `user_id, due_date`;
-- index по `user_id, priority`;
-- index по `roadmap_step_id, order_index`.
+- index по `user_id, priority`.
 
 ## 14. Таблица flashcards
 

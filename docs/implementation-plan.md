@@ -301,7 +301,7 @@ AI-service запускается и может возвращать тесто�
 - Запустить AI-service.
 - Вызвать health endpoint.
 - Вызвать генерацию roadmap с примерной целью.
-- Проверить, что ответ содержит `roadmap_title`, `roadmap_description`, `steps`, `tasks`.
+- Проверить, что ответ содержит `roadmap_title`, `roadmap_description`, `steps`, а задачи находятся внутри каждого step в поле `tasks`.
 
 ### Какие тесты написать
 
@@ -341,7 +341,7 @@ AI-service запускается и может возвращать тесто�
 - `GET /api/v1/goals/{id}/roadmap` возвращает roadmap.
 - `GET /api/v1/roadmaps/{id}` возвращает roadmap текущего пользователя.
 - Roadmap имеет steps.
-- Tasks автоматически создаются из AI-ответа.
+- После подключения tasks-модуля backend автоматически создает задачи из AI-ответа или по одной задаче на каждый roadmap step.
 - Ошибки AI-service возвращаются в контролируемом формате.
 
 ### Что проверить вручную

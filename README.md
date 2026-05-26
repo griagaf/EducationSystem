@@ -10,7 +10,7 @@ AI Personal Learning Platform - веб-платформа для персона�
 
 ## 2. Цели системы
 
-- хранить пользовательские заметки и учебные цели;
+- хранить учебные цели и связанные учебные данные;
 - поддерживать разные типы обучения через единую сущность `LearningGoal`;
 - строить roadmap вокруг `Topic`;
 - преобразовывать roadmap в задачи;
@@ -24,16 +24,14 @@ AI Personal Learning Platform - веб-платформа для персона�
 
 - регистрация и вход пользователей;
 - JWT-аутентификация;
-- личные заметки;
 - учебные цели типов `SELF_STUDY`, `EXAM_PREPARATION`, `INTERVIEW_PREPARATION`, `TECHNOLOGY_LEARNING`;
-- загрузка PDF, DOCX и TXT материалов;
+- загрузка TXT материалов;
 - извлечение текста из материалов в упрощенном виде;
 - выделение topics через AI-service;
 - AI-генерация roadmap;
 - автоматическое создание tasks;
 - flashcards и история прохождения;
 - расчет progress и `masteryScore`;
-- минимальный knowledge graph;
 - dashboard с агрегированной статистикой;
 - журнал AI-запросов для диагностики.
 
@@ -41,8 +39,8 @@ AI Personal Learning Platform - веб-платформа для персона�
 
 1. Пользователь регистрируется или входит в систему.
 2. Пользователь создает `LearningGoal`.
-3. Пользователь добавляет описание цели или загружает учебные материалы.
-4. Backend извлекает текст и вызывает AI-service для выделения topics.
+3. Пользователь добавляет описание цели или загружает TXT-материалы.
+4. Backend извлекает текст и сохраняет metadata материала.
 5. Backend создает roadmap и roadmap steps.
 6. Backend создает tasks и связывает их с steps и topics.
 7. Пользователь выполняет задачи и проходит flashcards.
@@ -145,16 +143,29 @@ EducationSystem/
 
 ## 9. Быстрый старт
 
-Локальный запуск рассчитан на Docker Compose:
+Локальный запуск рассчитан на Docker Compose.
+
+Перед запуском можно создать `.env` на основе `.env.example`. Для первого запуска достаточно значений по умолчанию.
 
 ```text
 docker compose up --build
+```
+
+Если локальный PostgreSQL уже занимает порт `5432`, задайте другой внешний порт:
+
+```text
+# PowerShell
+$env:DB_PORT='15432'; docker compose up -d --build
+
+# Bash
+DB_PORT=15432 docker compose up -d --build
 ```
 
 Проверки после запуска:
 
 - backend health endpoint отвечает: `GET http://localhost:8080/api/v1/health`;
 - AI-service health endpoint отвечает: `GET http://localhost:8000/health`;
+- AI-service roadmap endpoint в режиме graceful degradation отвечает: `POST http://localhost:8000/api/ai/generate-roadmap`;
 - frontend открывается: `http://localhost:3000`.
 
 Доступные backend endpoints текущего этапа:
@@ -167,8 +178,26 @@ docker compose up --build
 - `GET http://localhost:8080/api/v1/goals/{goalId}`;
 - `PUT http://localhost:8080/api/v1/goals/{goalId}`;
 - `DELETE http://localhost:8080/api/v1/goals/{goalId}`.
+- `GET http://localhost:8080/api/v1/goals/{goalId}/topics`;
+- `POST http://localhost:8080/api/v1/goals/{goalId}/generate-roadmap`;
+- `GET http://localhost:8080/api/v1/goals/{goalId}/roadmap`;
+- `GET http://localhost:8080/api/v1/roadmaps/{roadmapId}`.
+- `GET http://localhost:8080/api/v1/tasks`;
+- `POST http://localhost:8080/api/v1/tasks`;
+- `GET http://localhost:8080/api/v1/tasks/{taskId}`;
+- `PUT http://localhost:8080/api/v1/tasks/{taskId}`;
+- `DELETE http://localhost:8080/api/v1/tasks/{taskId}`;
+- `PATCH http://localhost:8080/api/v1/tasks/{taskId}/status`.
+- `POST http://localhost:8080/api/v1/topics/{topicId}/generate-flashcards`;
+- `GET http://localhost:8080/api/v1/topics/{topicId}/flashcards`;
+- `GET http://localhost:8080/api/v1/flashcards/{flashcardId}`;
+- `POST http://localhost:8080/api/v1/flashcards/{flashcardId}/review`.
+- `GET http://localhost:8080/api/v1/dashboard/summary`.
+- `POST http://localhost:8080/api/v1/goals/{goalId}/materials`;
+- `GET http://localhost:8080/api/v1/goals/{goalId}/materials`;
+- `GET http://localhost:8080/api/v1/materials/{materialId}`.
 
-`GET /api/v1/auth/me` и Learning Goals endpoints требуют заголовок `Authorization: Bearer <accessToken>`.
+`GET /api/v1/auth/me`, Learning Goals endpoints, Roadmap endpoints, Tasks endpoints, Flashcards endpoints, Materials endpoints и Dashboard endpoint требуют заголовок `Authorization: Bearer <accessToken>`.
 
 Доступные frontend routes текущего этапа:
 
@@ -177,21 +206,110 @@ docker compose up --build
 - `http://localhost:3000/dashboard`.
 - `http://localhost:3000/goals`;
 - `http://localhost:3000/goals/{goalId}`.
+- `http://localhost:3000/tasks`.
 
 Frontend поддерживает login, register, logout, хранение JWT и protected routes.
 Frontend поддерживает создание и просмотр учебных целей.
-Заметки, задачи, roadmap, dashboard data и AI-функции будут добавляться следующими этапами.
+AI-service поддерживает генерацию structured roadmap через внутренний endpoint.
+Backend поддерживает генерацию и сохранение roadmap, topics и roadmap steps через AI-service.
+Backend автоматически создает tasks из roadmap и поддерживает ручное управление задачами.
+Backend поддерживает генерацию flashcards по topic, сохранение review и обновление `masteryScore`.
+Backend поддерживает загрузку TXT-материалов, локальное хранение файла и сохранение metadata в PostgreSQL.
+Frontend поддерживает генерацию roadmap со страницы цели, отображение этапов roadmap, список задач, фильтрацию по статусу, изменение статуса задачи, генерацию flashcards по теме, прохождение review, dashboard со сводкой прогресса и загрузку материалов на странице цели.
+Заметки будут добавляться следующими этапами.
+
+### Быстрые тестовые данные
+
+Seed-скрипт для тестового пользователя не требуется. Для проверки основного сценария создайте пользователя через UI:
+
+```text
+Email: student@example.com
+Password: password123
+Display name: Student
+```
+
+Если такой email уже занят в локальной базе, используйте любой новый email, например `student-1@example.com`.
+
+Пример учебной цели:
+
+```text
+Title: Изучить Spring Boot за 4 недели
+Description: Освоить основы Spring Boot, REST API, JPA и подготовить небольшой учебный проект
+Type: TECHNOLOGY_LEARNING
+Duration: 4 недели
+```
+
+### Проверочный сценарий
+
+1. Открыть `http://localhost:3000/register`.
+2. Зарегистрировать пользователя или войти через `/login`.
+3. Создать цель `Изучить Spring Boot за 4 недели`.
+4. Открыть страницу цели и нажать `Сгенерировать roadmap`.
+5. Проверить, что появились roadmap steps, topics и задачи.
+6. Открыть карточки у topic и нажать `Сгенерировать карточки`.
+7. Пройти одну карточку через `KNOW`, `PARTIAL` или `DONT_KNOW`.
+8. Отметить одну задачу как `DONE`.
+9. Открыть `/dashboard` и проверить обновленную сводку.
 
 ## 10. Переменные окружения
 
 Минимальные группы настроек:
 
-- backend: `JWT_SECRET`, `JWT_ACCESS_TOKEN_TTL`, параметры подключения к PostgreSQL, URL AI-service;
+- backend: `JWT_SECRET`, `JWT_ACCESS_TOKEN_TTL`, параметры подключения к PostgreSQL, URL AI-service, `FILE_STORAGE_UPLOAD_DIR`;
 - PostgreSQL: database name, user, password;
 - AI-service: API key AI-провайдера, model name, timeout;
 - frontend: базовый URL backend API.
 
 Реальные значения секретов не должны храниться в репозитории. Для разработки допускается `.env.example` без чувствительных данных.
+
+Основные переменные:
+
+```text
+DB_PORT=5432
+DB_NAME=ai_learning
+DB_USER=ai_learning
+DB_PASSWORD=ai_learning_password
+DATABASE_URL=jdbc:postgresql://postgres:5432/ai_learning
+JWT_SECRET=change-me-to-a-long-random-secret
+JWT_ACCESS_TOKEN_TTL=PT30M
+AI_SERVICE_URL=http://ai-service:8000
+AI_API_KEY=
+AI_GRACEFUL_DEGRADATION_ENABLED=true
+FILE_STORAGE_UPLOAD_DIR=/app/storage/materials
+VITE_API_BASE_URL=http://localhost:8080/api/v1
+```
+
+Если `AI_API_KEY` пустой, AI-service использует механизм graceful degradation и возвращает стабильные mock-данные для roadmap и flashcards.
+
+## 10.1. Troubleshooting
+
+### PostgreSQL port is already allocated
+
+Причина: локальный PostgreSQL или другой контейнер уже использует `5432`.
+
+Решение:
+
+```text
+$env:DB_PORT='15432'; docker compose up -d --build
+```
+
+Backend внутри Docker Compose продолжит подключаться к `postgres:5432`; меняется только внешний порт на хосте.
+
+### Backend health endpoint временно не отвечает сразу после запуска
+
+Backend применяет Flyway migrations и инициализирует JPA. Подождите 10-20 секунд и повторите:
+
+```text
+GET http://localhost:8080/api/v1/health
+```
+
+### Roadmap или flashcards генерируются без внешнего AI API
+
+Это ожидаемое поведение. При пустом `AI_API_KEY` включается graceful degradation, чтобы основной пользовательский сценарий работал без внешнего провайдера.
+
+### Пользователь не может открыть protected route
+
+Проверьте, что после login/register в браузере есть актуальный JWT. При `401 Unauthorized` frontend очищает token и отправляет пользователя на `/login`.
 
 ## 11. Границы системы
 
@@ -205,6 +323,8 @@ Frontend поддерживает создание и просмотр учеб�
 - сложная ML-модель оценки знаний;
 - совместная работа в реальном времени;
 - адаптивный AI-наставник;
+- личные заметки;
+- минимальный knowledge graph;
 - мобильное приложение.
 
 Эти ограничения являются осознанными: система должна оставаться понятной, реализуемой и пригодной для постепенного развития.
