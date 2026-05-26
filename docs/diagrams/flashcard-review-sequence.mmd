@@ -5,7 +5,7 @@ sequenceDiagram
     participant DB as PostgreSQL
 
     U->>F: Прохождение flashcard
-    F->>B: POST /api/v1/flashcards/{id}/reviews
+    F->>B: POST /api/v1/flashcards/{id}/review
     B->>B: Проверка JWT и доступа пользователя
     B->>DB: Сохранение FlashcardReview
     B->>B: Пересчет Topic.masteryScore
