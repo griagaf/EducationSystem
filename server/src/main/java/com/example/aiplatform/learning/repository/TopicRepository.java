@@ -12,6 +12,8 @@ public interface TopicRepository extends JpaRepository<Topic, UUID> {
 
     List<Topic> findAllByLearningGoalIdAndUserIdOrderByCreatedAtAsc(UUID learningGoalId, UUID userId);
 
+    List<Topic> findAllByUserIdOrderByMasteryScoreAscCreatedAtAsc(UUID userId);
+
     Optional<Topic> findByIdAndUserId(UUID id, UUID userId);
 
     @Query("""

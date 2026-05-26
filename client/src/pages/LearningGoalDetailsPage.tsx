@@ -8,12 +8,13 @@ import { Card } from '../components/ui/Card';
 import { Spinner } from '../components/ui/Spinner';
 import { GoalStatusBadge } from '../features/learning/GoalStatusBadge';
 import { learningGoalTypeLabels } from '../features/learning/learningLabels';
+import { FlashcardPanel } from '../features/flashcards/FlashcardPanel';
 import { TaskStatusBadge } from '../features/tasks/TaskStatusBadge';
 import { taskPriorityLabels, taskStatusLabels } from '../features/tasks/taskLabels';
 import { getApiErrorMessage } from '../services/apiClient';
 import { learningService } from '../services/learningService';
 import { taskService } from '../services/taskService';
-import type { LearningGoal, Roadmap, Topic } from '../types/learning';
+import type { LearningGoal, Roadmap, StudyMaterial, Topic } from '../types/learning';
 import type { Task, TaskStatus } from '../types/tasks';
 
 export function LearningGoalDetailsPage() {
@@ -21,13 +22,18 @@ export function LearningGoalDetailsPage() {
   const [goal, setGoal] = useState<LearningGoal | null>(null);
   const [roadmap, setRoadmap] = useState<Roadmap | null>(null);
   const [topics, setTopics] = useState<Topic[]>([]);
+  const [materials, setMaterials] = useState<StudyMaterial[]>([]);
   const [tasks, setTasks] = useState<Task[]>([]);
   const [pageError, setPageError] = useState('');
   const [roadmapError, setRoadmapError] = useState('');
+  const [materialError, setMaterialError] = useState('');
   const [taskError, setTaskError] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isUploadingMaterial, setIsUploadingMaterial] = useState(false);
   const [updatingTaskId, setUpdatingTaskId] = useState<string | null>(null);
+  const [selectedFlashcardTopicId, setSelectedFlashcardTopicId] = useState<string | null>(null);
+  const [selectedMaterialFile, setSelectedMaterialFile] = useState<File | null>(null);
 
   const loadGoalFlow = useCallback(async () => {
     if (!goalId) {
@@ -42,14 +48,18 @@ export function LearningGoalDetailsPage() {
 
     try {
       const goalData = await learningService.getGoal(goalId);
-      const [roadmapData, taskData] = await Promise.all([
+      const [roadmapData, taskData, topicData, materialData] = await Promise.all([
         learningService.getRoadmap(goalId),
         taskService.getTasks({ learningGoalId: goalId }),
+        learningService.getTopics(goalId),
+        learningService.getMaterials(goalId),
       ]);
 
       setGoal(goalData);
       setRoadmap(roadmapData);
       setTasks(taskData);
+      setTopics(topicData);
+      setMaterials(materialData);
     } catch (requestError) {
       setPageError(getApiErrorMessage(requestError));
     } finally {
@@ -77,6 +87,10 @@ export function LearningGoalDetailsPage() {
       return accumulator;
     }, {});
   }, [tasks]);
+
+  const selectedFlashcardTopic = selectedFlashcardTopicId
+    ? topicsById.get(selectedFlashcardTopicId) ?? null
+    : null;
 
   async function handleGenerateRoadmap() {
     if (!goalId) {
@@ -129,6 +143,33 @@ export function LearningGoalDetailsPage() {
     } finally {
       setUpdatingTaskId(null);
     }
+  }
+
+  async function handleMaterialUpload() {
+    if (!goalId || !selectedMaterialFile) {
+      return;
+    }
+
+    setIsUploadingMaterial(true);
+    setMaterialError('');
+
+    try {
+      const uploadedMaterial = await learningService.uploadMaterial(goalId, selectedMaterialFile);
+      setMaterials((currentMaterials) => [uploadedMaterial, ...currentMaterials]);
+      setSelectedMaterialFile(null);
+    } catch (requestError) {
+      setMaterialError(getApiErrorMessage(requestError));
+    } finally {
+      setIsUploadingMaterial(false);
+    }
+  }
+
+  function handleTopicMasteryScoreChange(topicId: string, masteryScore: number) {
+    setTopics((currentTopics) =>
+      currentTopics.map((topic) =>
+        topic.id === topicId ? { ...topic, masteryScore } : topic,
+      ),
+    );
   }
 
   if (isLoading) {
@@ -196,6 +237,58 @@ export function LearningGoalDetailsPage() {
       <Card>
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
+            <h3 className="text-lg font-semibold text-slate-950">Материалы</h3>
+            <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">
+              Загрузите TXT-материал, чтобы привязать исходный текст к учебной цели.
+            </p>
+          </div>
+          <Badge tone="slate">TXT</Badge>
+        </div>
+
+        <div className="mt-5 grid gap-3 rounded-lg border border-slate-200 bg-slate-50 px-4 py-4 md:grid-cols-[1fr_auto]">
+          <label className="block">
+            <span className="text-sm font-medium text-slate-700">Файл материала</span>
+            <input
+              accept=".txt,text/plain"
+              className="mt-2 block w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 file:mr-4 file:rounded-md file:border-0 file:bg-sky-700 file:px-3 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-sky-800 focus:border-sky-600 focus:outline-none focus:ring-2 focus:ring-sky-100"
+              disabled={isUploadingMaterial}
+              onChange={(event) => setSelectedMaterialFile(event.target.files?.[0] ?? null)}
+              type="file"
+            />
+          </label>
+          <div className="flex items-end">
+            <Button
+              className="w-full md:w-auto"
+              disabled={!selectedMaterialFile || isUploadingMaterial}
+              onClick={handleMaterialUpload}
+            >
+              {isUploadingMaterial ? 'Загружаем...' : 'Загрузить'}
+            </Button>
+          </div>
+        </div>
+
+        {materialError ? (
+          <div className="mt-4">
+            <Alert message={materialError} />
+          </div>
+        ) : null}
+
+        {materials.length === 0 ? (
+          <div className="mt-5 rounded-lg border border-dashed border-slate-300 bg-slate-50 px-4 py-5 text-sm text-slate-600">
+            К этой цели пока не привязаны материалы.
+          </div>
+        ) : (
+          <div className="mt-5 grid gap-3">
+            {materials.map((material) => (
+              <MaterialRow key={material.id} material={material} />
+            ))}
+          </div>
+        )}
+      </Card>
+
+      <Card>
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div>
             <h3 className="text-lg font-semibold text-slate-950">Roadmap</h3>
             <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">
               Сгенерируйте roadmap, чтобы получить этапы обучения и связанные задачи.
@@ -231,6 +324,7 @@ export function LearningGoalDetailsPage() {
 
         {roadmap ? (
           <RoadmapView
+            onOpenFlashcards={setSelectedFlashcardTopicId}
             onTaskStatusChange={handleTaskStatusChange}
             tasksByStepId={tasksByStepId}
             topicsById={topicsById}
@@ -276,8 +370,56 @@ export function LearningGoalDetailsPage() {
           </div>
         )}
       </Card>
+
+      {selectedFlashcardTopic ? (
+        <FlashcardPanel
+          onClose={() => setSelectedFlashcardTopicId(null)}
+          onMasteryScoreChange={handleTopicMasteryScoreChange}
+          topic={selectedFlashcardTopic}
+        />
+      ) : null}
     </div>
   );
+}
+
+type MaterialRowProps = {
+  material: StudyMaterial;
+};
+
+function MaterialRow({ material }: MaterialRowProps) {
+  return (
+    <div className="rounded-lg border border-slate-200 bg-slate-50 px-4 py-3">
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div className="min-w-0">
+          <div className="font-semibold text-slate-950">{material.fileName}</div>
+          <div className="mt-1 text-sm text-slate-600">
+            {formatFileSize(material.fileSize)} · {material.contentType}
+          </div>
+        </div>
+        <Badge tone={material.processingStatus === 'TEXT_EXTRACTED' ? 'green' : 'slate'}>
+          {material.processingStatus}
+        </Badge>
+      </div>
+
+      {material.extractedText ? (
+        <p className="mt-3 line-clamp-2 text-sm leading-6 text-slate-600">
+          {material.extractedText}
+        </p>
+      ) : null}
+    </div>
+  );
+}
+
+function formatFileSize(size: number) {
+  if (size < 1024) {
+    return `${size} B`;
+  }
+
+  if (size < 1024 * 1024) {
+    return `${Math.round(size / 1024)} KB`;
+  }
+
+  return `${(size / 1024 / 1024).toFixed(1)} MB`;
 }
 
 type RoadmapViewProps = {
@@ -285,6 +427,7 @@ type RoadmapViewProps = {
   tasksByStepId: Record<string, Task[]>;
   topicsById: Map<string, Topic>;
   updatingTaskId: string | null;
+  onOpenFlashcards: (topicId: string) => void;
   onTaskStatusChange: (taskId: string, status: TaskStatus) => void;
 };
 
@@ -293,6 +436,7 @@ function RoadmapView({
   tasksByStepId,
   topicsById,
   updatingTaskId,
+  onOpenFlashcards,
   onTaskStatusChange,
 }: RoadmapViewProps) {
   const sortedSteps = [...roadmap.steps].sort((left, right) => left.orderIndex - right.orderIndex);
@@ -333,9 +477,25 @@ function RoadmapView({
 
               <div className="mt-4 flex flex-wrap gap-2">
                 {step.topicId ? (
-                  <Badge tone="neutral">
-                    {topic?.title ?? `Topic ${step.topicId.slice(0, 8)}`}
-                  </Badge>
+                  <>
+                    <Badge tone="neutral">
+                      {topic?.title ?? `Topic ${step.topicId.slice(0, 8)}`}
+                    </Badge>
+                    {topic ? (
+                      <>
+                        <Badge tone={topic.masteryScore >= 70 ? 'green' : 'slate'}>
+                          Mastery {topic.masteryScore}%
+                        </Badge>
+                        <Button
+                          className="h-8 px-3"
+                          onClick={() => onOpenFlashcards(topic.id)}
+                          variant="secondary"
+                        >
+                          Карточки
+                        </Button>
+                      </>
+                    ) : null}
+                  </>
                 ) : (
                   <Badge tone="slate">Topic не указан</Badge>
                 )}

@@ -537,7 +537,7 @@ Response body:
 
 ### POST /api/v1/goals/{id}/materials
 
-Назначение: загрузка PDF, DOCX или TXT материала для учебной цели.
+Назначение: загрузка TXT-материала для учебной цели.
 
 Метод: `POST`
 
@@ -555,10 +555,11 @@ Response body:
 {
   "id": "uuid",
   "learningGoalId": "uuid",
-  "fileName": "spring-notes.pdf",
-  "contentType": "application/pdf",
-  "fileSize": 524288,
-  "processingStatus": "UPLOADED",
+  "fileName": "spring-notes.txt",
+  "contentType": "text/plain",
+  "fileSize": 4096,
+  "processingStatus": "TEXT_EXTRACTED",
+  "extractedText": "Extracted text from TXT material",
   "createdAt": "2026-05-15T10:00:00Z"
 }
 ```
@@ -586,10 +587,12 @@ Response body:
 [
   {
     "id": "uuid",
-    "fileName": "spring-notes.pdf",
-    "contentType": "application/pdf",
-    "fileSize": 524288,
-    "processingStatus": "TOPICS_EXTRACTED",
+    "learningGoalId": "uuid",
+    "fileName": "spring-notes.txt",
+    "contentType": "text/plain",
+    "fileSize": 4096,
+    "processingStatus": "TEXT_EXTRACTED",
+    "extractedText": "Extracted text from TXT material",
     "createdAt": "2026-05-15T10:00:00Z"
   }
 ]
@@ -601,9 +604,42 @@ Response body:
 - `404 Not Found` - учебная цель не найдена;
 - `500 Internal Server Error` - ошибка получения материалов.
 
+### GET /api/v1/materials/{id}
+
+Назначение: получение одного материала текущего пользователя.
+
+Метод: `GET`
+
+JWT: требуется.
+
+Request body: отсутствует.
+
+Response body:
+
+```json
+{
+  "id": "uuid",
+  "learningGoalId": "uuid",
+  "fileName": "spring-notes.txt",
+  "contentType": "text/plain",
+  "fileSize": 4096,
+  "processingStatus": "TEXT_EXTRACTED",
+  "extractedText": "Extracted text from TXT material",
+  "createdAt": "2026-05-15T10:00:00Z"
+}
+```
+
+Возможные ошибки:
+
+- `401 Unauthorized` - JWT отсутствует или недействителен;
+- `404 Not Found` - материал не найден или принадлежит другому пользователю;
+- `500 Internal Server Error` - ошибка получения материала.
+
 ### POST /api/v1/materials/{id}/extract-topics
 
 Назначение: извлечение тем из материала через AI-service.
+
+Статус: запланировано для следующих версий. В текущем backend-этапе реализованы загрузка TXT, сохранение metadata и чтение материалов.
 
 Метод: `POST`
 
@@ -1251,24 +1287,12 @@ Response body:
 
 ```json
 {
-  "activeGoalsCount": 2,
-  "completedGoalsCount": 1,
-  "archivedGoalsCount": 0,
-  "notesCount": 12,
-  "totalTasksCount": 24,
-  "completedTasksCount": 10,
-  "overallProgressPercent": 41,
+  "totalGoals": 3,
+  "activeGoals": 2,
+  "totalTasks": 24,
+  "completedTasks": 10,
+  "taskCompletionPercent": 41,
   "averageMasteryScore": 38,
-  "goals": [
-    {
-      "id": "uuid",
-      "title": "Изучить Java Spring Boot",
-      "type": "TECHNOLOGY_LEARNING",
-      "status": "ACTIVE",
-      "progressPercent": 42,
-      "averageMasteryScore": 40
-    }
-  ],
   "weakTopics": [
     {
       "id": "uuid",
@@ -1278,10 +1302,21 @@ Response body:
       "difficultyLevel": "HARD"
     }
   ],
+  "recentGoals": [
+    {
+      "id": "uuid",
+      "title": "Изучить Java Spring Boot",
+      "type": "TECHNOLOGY_LEARNING",
+      "status": "ACTIVE",
+      "progressPercent": 42,
+      "createdAt": "2026-05-15T10:00:00Z"
+    }
+  ],
   "upcomingTasks": [
     {
       "id": "uuid",
       "learningGoalId": "uuid",
+      "learningGoalTitle": "Изучить Java Spring Boot",
       "title": "Сделать REST API practice task",
       "status": "TODO",
       "priority": "HIGH",

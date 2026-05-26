@@ -6,6 +6,8 @@ import type {
   LearningGoal,
   LearningGoalCreateRequest,
   Roadmap,
+  StudyMaterial,
+  Topic,
 } from '../types/learning';
 
 export const learningService = {
@@ -34,6 +36,32 @@ export const learningService = {
       }
       throw error;
     }
+  },
+
+  async getTopics(goalId: string) {
+    const response = await apiClient.get<Topic[]>(`/goals/${goalId}/topics`);
+    return response.data;
+  },
+
+  async getMaterials(goalId: string) {
+    const response = await apiClient.get<StudyMaterial[]>(`/goals/${goalId}/materials`);
+    return response.data;
+  },
+
+  async uploadMaterial(goalId: string, file: File) {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const response = await apiClient.post<StudyMaterial>(
+      `/goals/${goalId}/materials`,
+      formData,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      },
+    );
+    return response.data;
   },
 
   async generateRoadmap(
